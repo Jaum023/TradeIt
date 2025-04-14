@@ -1,0 +1,2 @@
+# TradeIt
+ Projeto TradeIt
