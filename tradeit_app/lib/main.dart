@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
+import 'src/routes/routes.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const TradeItApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class TradeItApp extends StatelessWidget {
+  const TradeItApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'TradeIt',
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple,
       ),
+      initialRoute: '/login', // Ponto de entrada do app
+      routes: routes, // Todas as rotas registradas
     );
   }
 }

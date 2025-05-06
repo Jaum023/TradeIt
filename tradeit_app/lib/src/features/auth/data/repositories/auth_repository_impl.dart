@@ -1,0 +1,1 @@
+// Arquivo q implementa a interface da domain
