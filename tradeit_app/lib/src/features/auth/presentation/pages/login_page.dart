@@ -11,7 +11,7 @@ Widget build(BuildContext context) {
         children: [
           TextButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/home');
+              Navigator.pushReplacementNamed(context, '/home');
               },
             child: const Text("Entrar"),
             ),
