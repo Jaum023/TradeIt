@@ -15,6 +15,8 @@ class TradeItApp extends StatelessWidget {
       title: 'TradeIt',
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
+        fontFamily: ('Montserrat'),
+        useMaterial3: true,
       ),
       initialRoute: '/login', // Ponto de entrada do app
       routes: routes, // Todas as rotas registradas
