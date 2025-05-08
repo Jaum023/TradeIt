@@ -2,30 +2,6 @@ import 'package:flutter/material.dart';
 import '../controllers/auth_controller.dart';
 import '../widgets/auth_text_field.dart';
 
-<<<<<<< HEAD
-class LoginPage extends StatelessWidget{
- @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextButton(
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, '/home');
-              },
-            child: const Text("Entrar"),
-            ),
-          SizedBox(height: 10), // spacing between buttons
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/register');
-            },
-            child: const Text("Registrar Conta"),
-            ),
-          ],
-=======
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -90,7 +66,6 @@ class _LoginPageState extends State<LoginPage> {
               )
             ],
           ),
->>>>>>> developer
         ),
       ),
     );
