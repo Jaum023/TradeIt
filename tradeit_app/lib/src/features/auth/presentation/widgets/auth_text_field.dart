@@ -40,7 +40,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
       keyboardType: widget.keyboardType,
       validator: widget.validator,
       decoration: InputDecoration(
-        prefixIcon: Icon(widget.icon),
+        prefixIcon: Icon(widget.icon, color: Colors.deepPurple),
         suffixIcon: widget.obscure
             ? IconButton(
                 icon: Icon(

@@ -32,9 +32,9 @@ class ListingPage extends StatelessWidget {
             child: ListTile(
               title: Text(anuncio['titulo']!),
               subtitle: Text(anuncio['descricao']!),
-              leading: Icon(Icons.swap_horiz, color: Colors.teal),
+              leading: Icon(Icons.swap_horiz, color: Colors.deepPurple),
               onTap: () {
-                // navegar para a tela de mais detalhes do item
+                Navigator.pushNamed(context, '/login');
               },
             ),
           );
