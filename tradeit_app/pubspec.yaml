@@ -33,7 +33,15 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+<<<<<<< Updated upstream
   assets:
     - assets/images/logo.png
     - assets/images/google_logo.png
     - assets/images/facebook_logo.png    
+=======
+  fonts:
+  - family: Montserrat
+    fonts:
+      - asset: assets/fonts/Montserrat-Regular.ttf
+      
+>>>>>>> Stashed changes
