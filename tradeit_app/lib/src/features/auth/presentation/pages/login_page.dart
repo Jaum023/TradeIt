@@ -47,11 +47,11 @@ class _LoginPageState extends State<LoginPage> {
                     hint: "Email",
                     icon: Icons.email,
                     keyboardType: TextInputType.emailAddress,
-                    //validator: (value) {   DESATIVANDO PARA FACILITAR OS TESTES
-                      //if (value == null || value.isEmpty) return 'Campo obrigatório';
-                      //if (!value.contains('@')) return 'Email inválido';
-                      //return null;
-                    //},
+                    // validator: (value) {  // DESATIVANDO PARA FACILITAR OS TESTES
+                    //   if (value == null || value.isEmpty) return 'Campo obrigatório';
+                    //   if (!value.contains('@')) return 'Email inválido';
+                    //   return null;
+                    // },
                   ),
                   const SizedBox(height: 10),
                   AuthTextField(
