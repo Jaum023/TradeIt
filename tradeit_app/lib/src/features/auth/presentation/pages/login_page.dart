@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   AuthTextField(
                     controller: controller.txtEmail,
-                    hint: "E-mail",
+                    hint: "Email",
                     icon: Icons.email,
                     keyboardType: TextInputType.emailAddress,
                     //validator: (value) {   DESATIVANDO PARA FACILITAR OS TESTES
