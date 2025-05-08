@@ -18,11 +18,15 @@ class ProductDetail extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Imagem do produto
             SizedBox(height: 20),
-
+            Center(
+              child: Text("Imagem Produto"),
+             
+            ),
+            SizedBox(height: 25),
             // Nome do produto
             Text(tituloProduto ?? "Produto não encontrado", style: Theme.of(context).textTheme.headlineSmall),
 
