@@ -54,6 +54,7 @@ class ProductDetail extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                 ),
                 onPressed: () {
+                  Navigator.pushNamed(context, '/create');
                   // Lógica para iniciar proposta de troca
                   // Exemplo: Navigator.pushNamed(context, '/propor-troca', arguments: produto);
                 },
