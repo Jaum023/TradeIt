@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 class ListingPage extends StatelessWidget {
   final List<Map<String, String>> anuncios = [
     {
-      'titulo': 'Troco bicicleta por skate',
+      'titulo': 'Bicicleta',
       'descricao': 'Bicicleta aro 26 em ótimo estado, aceito skate como troca.',
     },
     {
-      'titulo': 'Livro de romance por livro de suspense',
+      'titulo': 'Livro de romance',
       'descricao': 'Livro novo, troco por outro em bom estado.',
     },
     {
-      'titulo': 'Smartphone antigo por fones bluetooth',
+      'titulo': 'Smartphone antigo',
       'descricao': 'Aparelho funcionando, ideal como reserva.',
     },
   ];
@@ -34,7 +34,7 @@ class ListingPage extends StatelessWidget {
               subtitle: Text(anuncio['descricao']!),
               leading: Icon(Icons.swap_horiz, color: Colors.deepPurple),
               onTap: () {
-                Navigator.pushNamed(context, '/login');
+                Navigator.pushNamed(context, '/details', arguments:{'tituloProduto': anuncio['titulo'], 'descricaoProduto': anuncio['descricao']});
               },
             ),
           );
