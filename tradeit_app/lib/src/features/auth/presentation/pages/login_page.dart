@@ -26,9 +26,9 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
   super.initState();
 
-  final datasource = FirebaseAuthDatasource(); // ✅ instância concreta
+  final datasource = FirebaseAuthDatasource();
 
-  authRepository = AuthRepositoryImpl(datasource); // ✅ passa como argumento
+  authRepository = AuthRepositoryImpl(datasource);
   authController = AuthController.login(
   loginWithEmail: LoginWithEmail(authRepository),
   loginWithGoogle: LoginWithGoogle(authRepository),
@@ -67,11 +67,11 @@ class _LoginPageState extends State<LoginPage> {
                     hint: "Email",
                     icon: Icons.email,
                     keyboardType: TextInputType.emailAddress,
-                    // validator: (value) {  // DESATIVANDO PARA FACILITAR OS TESTES
-                    //   if (value == null || value.isEmpty) return 'Campo obrigatório';
-                    //   if (!value.contains('@')) return 'Email inválido';
-                    //   return null;
-                    // },
+                    validator: (value) {  // DESATIVANDO PARA FACILITAR OS TESTES
+                      if (value == null || value.isEmpty) return 'Campo obrigatório';
+                      if (!value.contains('@')) return 'Email inválido';
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 10),
                   AuthTextField(
@@ -79,10 +79,10 @@ class _LoginPageState extends State<LoginPage> {
                     hint: "Senha",
                     icon: Icons.lock,
                     obscure: true,
-                    //validator: (value) {   DESATIVANDO PARA FACILITAR OS TESTES
-                      //if (value == null || value.length < 6) return 'Senha muito curta';
-                      //return null;
-                    //},
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'Campo obrigatório';
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 20),
                   SizedBox(
