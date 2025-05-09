@@ -1,12 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import '../repositories/auth_repository.dart';
+import 'package:tradeit_app/src/features/auth/domain/entities/app_user.dart'; 
 
 class RegisterWithEmail {
   final AuthRepository repository;
 
   RegisterWithEmail(this.repository);
 
-  Future<User?> call(String email, String password) {
+  Future<AppUser?> call(String email, String password) {
     return repository.registerWithEmail(email, password);
   }
 }

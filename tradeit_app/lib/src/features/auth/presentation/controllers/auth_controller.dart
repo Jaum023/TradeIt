@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tradeit_app/src/features/auth/domain/usecases/login_with_email.dart';
 import 'package:tradeit_app/src/features/auth/domain/usecases/login_with_google.dart';
 import 'package:tradeit_app/src/features/auth/domain/usecases/register_with_email.dart';
+import 'package:tradeit_app/src/features/auth/domain/entities/app_user.dart'; 
 
 class AuthController {
   final LoginWithEmail loginWithEmail;
@@ -26,7 +27,7 @@ class AuthController {
 
   Future<void> registerUser(BuildContext context) async {
   try {
-    final user = await registerWithEmail!(
+    final AppUser? user = await registerWithEmail!(
       txtEmail.text.trim(),
       txtPassword.text.trim(),
     );
@@ -43,7 +44,7 @@ class AuthController {
 
   Future<void> login(BuildContext context) async {
     try {
-      final user = await loginWithEmail(txtEmail.text.trim(), txtPassword.text.trim());
+      final AppUser? user = await loginWithEmail(txtEmail.text.trim(), txtPassword.text.trim());
       if (user != null) {
         Navigator.pushReplacementNamed(context, "/home");
       }
@@ -56,7 +57,7 @@ class AuthController {
 
   Future<void> signInWithGoogle(BuildContext context) async {
     try {
-      final user = await loginWithGoogle();
+      final AppUser? user = await loginWithGoogle();
       if (user != null) {
         Navigator.pushReplacementNamed(context, "/home");
       }

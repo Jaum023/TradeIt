@@ -1,9 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:tradeit_app/src/features/auth/domain/entities/app_user.dart';
 
 abstract class AuthDatasource {
-  Future<User?> signInWithEmail(String email, String password);
-  Future<User?> signInWithGoogle();
-  Future<User?> registerWithEmail(String email, String password);
+  Future<AppUser?> signInWithEmail(String email, String password);
+  Future<AppUser?> signInWithGoogle();
+  Future<AppUser?> registerWithEmail(String email, String password);
   Future<void> logout();
-  User? get currentUser;
+  AppUser? get currentAppUser;
 }
