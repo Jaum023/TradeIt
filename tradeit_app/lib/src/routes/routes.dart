@@ -7,12 +7,19 @@ import 'package:tradeit_app/src/features/ads/presentation/pages/create_ads_page.
 import 'package:tradeit_app/src/features/chat/presentation/pages/chat_page.dart';
 import 'package:tradeit_app/src/features/chat/presentation/pages/inbox_page.dart';
 import 'package:tradeit_app/src/features/chat/domain/entities/chat_message.dart' as domain;
+import 'package:tradeit_app/src/features/ads/presentation/pages/edit_ads_page.dart';
 
 final routes = <String, WidgetBuilder>{
   '/login': (context) => LoginPage(),
   '/register': (context) => RegisterPage(),
   '/home': (context) => ListingPage(),
   '/create': (context) => CreateAdsPage(),
+  '/edit': (context) => const EditAdsPage(
+        title: '', 
+        description: '',
+        condition: '',
+        categories: '',
+      ),
   '/details': (context) => ProductDetail(),
   '/chat_teste': (context) => ChatPage(
     proposta: 'Trocar tênis por livro - 01/05',

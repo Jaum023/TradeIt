@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-class CreateAdsPage extends StatefulWidget {
-  const CreateAdsPage({Key? key}) : super(key: key);
+class EditAdsPage extends StatefulWidget {
+  const EditAdsPage({Key? key, required String condition, required String description, required String title, required String categories}) : super(key: key);
 
   @override
-  _CreateAdsPageState createState() => _CreateAdsPageState();
+  _EditAdsPageState createState() => _EditAdsPageState();
 }
 
-class _CreateAdsPageState extends State<CreateAdsPage> {
+class _EditAdsPageState extends State<EditAdsPage> {
+  late TextEditingController titleController;
+  late TextEditingController descriptionController;
   String? selectedCondition;
   String? selectedCategory;
 
@@ -26,8 +28,22 @@ class _CreateAdsPageState extends State<CreateAdsPage> {
     'Outros',
   ];
 
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    titleController = TextEditingController(text: args['title']);
+    descriptionController = TextEditingController(text: args['description']);
+    selectedCondition = args['condition'];
+    selectedCategory = args['category'];
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,11 +57,11 @@ class _CreateAdsPageState extends State<CreateAdsPage> {
             IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
               onPressed: () {
-                Navigator.of(context).pushNamed('/home'); 
+                Navigator.of(context).pop();
               },
             ),
             const Text(
-              'Detalhes do Anúncio',
+              'Editar Anúncio',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -55,7 +71,7 @@ class _CreateAdsPageState extends State<CreateAdsPage> {
             const SizedBox(height: 16),
             GestureDetector(
               onTap: () {
-                // Ação para selecionar uma imagem
+                // selecionar uma imagem
               },
               child: Container(
                 height: 150,
@@ -177,20 +193,7 @@ class _CreateAdsPageState extends State<CreateAdsPage> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                final title = titleController.text;
-                final description = descriptionController.text;
-                final condition = selectedCondition ?? 'Novo'; 
-                final category = selectedCategory ?? 'Outros'; 
-
-                Navigator.of(context).pushNamed(
-                  '/edit',
-                  arguments: {
-                    'title': title,
-                    'description': description,
-                    'condition': condition,
-                    'category': category,
-                  },
-                );
+                // Ação ao salvar o anúncio editado
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
@@ -200,7 +203,7 @@ class _CreateAdsPageState extends State<CreateAdsPage> {
                 ),
               ),
               child: const Text(
-                'Salvar Anúncio',
+                'Salvar Alterações',
                 style: TextStyle(
                   color: Colors.deepPurple,
                   fontWeight: FontWeight.bold,
