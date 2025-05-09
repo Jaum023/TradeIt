@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tradeit_app/shared/widgets/custom_bottom_app_bar.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -66,6 +67,7 @@ class ProfilePage extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: CustomBottomAppBar(currentIndex: 3),
     );
   }
 }

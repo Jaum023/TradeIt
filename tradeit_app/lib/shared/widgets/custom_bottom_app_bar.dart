@@ -22,7 +22,7 @@ void _onItemTapped(BuildContext context, int index) async {
       break;
     case 3:
       await FirebaseAuth.instance.signOut();
-      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+      Navigator.pushNamedAndRemoveUntil(context, '/profile', (route) => false);
       break;
   }
 }
@@ -47,8 +47,8 @@ void _onItemTapped(BuildContext context, int index) async {
           label: 'Inbox',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.logout),
-          label: 'Logout',
+          icon: Icon(Icons.person),
+          label: 'Perfil',
         ),
       ],
     );
