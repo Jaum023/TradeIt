@@ -5,7 +5,6 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Simulação de dados do usuário
     final String nome = 'João da Silva';
     final String email = 'joao@email.com';
     final String? fotoUrl = null; 
@@ -59,7 +58,6 @@ class ProfilePage extends StatelessWidget {
               icon: const Icon(Icons.edit),
               label: const Text('Editar Perfil'),
               onPressed: () {
-                // Aqui será o botão de editar no futuro
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Segredo dos amigos')),
                 );
