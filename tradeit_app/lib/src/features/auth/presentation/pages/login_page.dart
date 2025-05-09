@@ -3,21 +3,41 @@
 import 'package:flutter/material.dart';
 import '../controllers/auth_controller.dart';
 import '../widgets/auth_text_field.dart';
+import 'package:tradeit_app/src/features/auth/domain/usecases/login_with_email.dart';
+import 'package:tradeit_app/src/features/auth/domain/usecases/login_with_google.dart';
+import 'package:tradeit_app/src/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:tradeit_app/src/features/auth/data/datasources/firebase_auth_datasource.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final controller = AuthController();
+  late final AuthRepositoryImpl authRepository;
+  late final AuthController authController;
   final _formKey = GlobalKey<FormState>();
 
   @override
+  void initState() {
+  super.initState();
+
+  final datasource = FirebaseAuthDatasource(); // ✅ instância concreta
+
+  authRepository = AuthRepositoryImpl(datasource); // ✅ passa como argumento
+  authController = AuthController.login(
+  loginWithEmail: LoginWithEmail(authRepository),
+  loginWithGoogle: LoginWithGoogle(authRepository),
+);
+}
+
+  @override
   void dispose() {
-    controller.dispose();
+    authController.dispose();
     super.dispose();
   }
 
@@ -43,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   AuthTextField(
-                    controller: controller.txtEmail,
+                    controller: authController.txtEmail,
                     hint: "Email",
                     icon: Icons.email,
                     keyboardType: TextInputType.emailAddress,
@@ -55,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 10),
                   AuthTextField(
-                    controller: controller.txtPassword,
+                    controller: authController.txtPassword,
                     hint: "Senha",
                     icon: Icons.lock,
                     obscure: true,
@@ -71,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          Navigator.pushNamed(context, "/home");
+                          authController.login(context);
                         }
                       },
                       child: const Text("Login", style: TextStyle(fontSize: 18),),
@@ -84,7 +104,8 @@ class _LoginPageState extends State<LoginPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          IconButton(onPressed: null, icon: SizedBox(height: 50,child: Image.asset('assets/images/google_logo.png'))),
+                          IconButton(  onPressed: () => authController.signInWithGoogle(context),
+                           icon: SizedBox(height: 50,child: Image.asset('assets/images/google_logo.png'))),
                           IconButton(onPressed: null, icon: SizedBox(height: 60,child: Image.asset('assets/images/facebook_logo.png')))
                         ],
                       ),

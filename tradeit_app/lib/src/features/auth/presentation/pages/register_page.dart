@@ -4,21 +4,39 @@ import 'package:flutter/material.dart';
 import '../controllers/auth_controller.dart';
 import '../widgets/auth_text_field.dart';
 import '../widgets/birth_date_field.dart';
+import 'package:tradeit_app/src/features/auth/domain/usecases/login_with_email.dart';
+import 'package:tradeit_app/src/features/auth/domain/usecases/login_with_google.dart';
+import 'package:tradeit_app/src/features/auth/domain/usecases/register_with_email.dart';
+import 'package:tradeit_app/src/features/auth/data/datasources/firebase_auth_datasource.dart';
+import 'package:tradeit_app/src/features/auth/data/repositories/auth_repository_impl.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<RegisterPage> {
-  final controller = AuthController();
+class _RegisterPageState extends State<RegisterPage> {
+  late final AuthController authController;
+  late final AuthRepositoryImpl authRepository;
+
+  @override
+  void initState() {
+  super.initState();
+  authRepository = AuthRepositoryImpl(FirebaseAuthDatasource());
+  authController = AuthController.register(
+  loginWithEmail: LoginWithEmail(authRepository),
+  loginWithGoogle: LoginWithGoogle(authRepository),
+  registerWithEmail: RegisterWithEmail(authRepository),
+  );
+  }
+
   final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    controller.dispose();
+    authController.dispose();
     super.dispose();
   }
 
@@ -40,7 +58,7 @@ class _LoginPageState extends State<RegisterPage> {
                   Text('Faça seu cadastro', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
                   SizedBox(height: 65,),
                   AuthTextField(
-                    controller: controller.txtName,
+                    controller: authController.txtName,
                     hint: "Digite seu nome",
                     icon: Icons.person,
                     keyboardType: TextInputType.name,
@@ -51,7 +69,7 @@ class _LoginPageState extends State<RegisterPage> {
                   ),
                   SizedBox(height: 8,),
                   AuthTextField(
-                    controller: controller.txtEmail,
+                    controller: authController.txtEmail,
                     hint: "Email",
                     icon: Icons.email,
                     keyboardType: TextInputType.emailAddress,
@@ -63,7 +81,7 @@ class _LoginPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 8),
                   AuthTextField(
-                    controller: controller.txtPassword,
+                    controller: authController.txtPassword,
                     hint: "Senha",
                     icon: Icons.lock,
                     obscure: true,
@@ -75,19 +93,19 @@ class _LoginPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 8),
                   AuthTextField(
-                    controller: controller.txtPasswordConfirm,
+                    controller: authController.txtPasswordConfirm,
                     hint: "Confirme sua senha",
                     icon: Icons.lock,
                     obscure: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) return 'Campo obrigatório';
-                      if (value != controller.txtPassword.text) return 'As senhas não são iguais';
+                      if (value != authController.txtPassword.text) return 'As senhas não são iguais';
                       return null;
                     },
                   ),
                   SizedBox(height: 8,),
                   BirthDateField(
-                    controller: controller.birthDateController,
+                    controller: authController.birthDateController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Selecione sua data de nascimento';
@@ -102,7 +120,7 @@ class _LoginPageState extends State<RegisterPage> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          Navigator.pushNamed(context, "/home");
+                        authController.registerUser(context);
                         }
                       },
                       child: const Text("Registrar", style: TextStyle(fontSize: 18),),

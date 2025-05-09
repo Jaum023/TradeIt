@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CustomBottomAppBar extends StatelessWidget {
   final int currentIndex;
@@ -8,22 +9,23 @@ class CustomBottomAppBar extends StatelessWidget {
     required this.currentIndex,
   }) : super(key: key);
 
-  void _onItemTapped(BuildContext context, int index) {
-    switch (index) {
-      case 0:
-        Navigator.pushNamed(context, '/home'); // Home
-        break;
-      case 1:
-        Navigator.pushNamed(context, '/create'); // Ir para página de criação
-        break;
-      case 2:
-        Navigator.pushNamed(context, '/profile'); // Perfil
-        break;
-      case 3:
-        Navigator.pushNamed(context, '/login');
-        break;
-    }
+void _onItemTapped(BuildContext context, int index) async {
+  switch (index) {
+    case 0:
+      Navigator.pushNamed(context, '/home');
+      break;
+    case 1:
+      Navigator.pushNamed(context, '/create');
+      break;
+    case 2:
+      Navigator.pushNamed(context, '/inbox');
+      break;
+    case 3:
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+      break;
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -41,12 +43,12 @@ class CustomBottomAppBar extends StatelessWidget {
           label: 'Criar',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Perfil',
+          icon: Icon(Icons.inbox),
+          label: 'Inbox',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.logout),
-          label: 'Retornar',
+          label: 'Logout',
         ),
       ],
     );
