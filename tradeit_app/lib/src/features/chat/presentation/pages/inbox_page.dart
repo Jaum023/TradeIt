@@ -51,7 +51,7 @@ class InboxPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => TelaChat(
+                  builder: (context) => ChatPage(
                     proposta: proposta['titulo'],
                     usuario: proposta['usuario'],
                     mensagensIniciais: [

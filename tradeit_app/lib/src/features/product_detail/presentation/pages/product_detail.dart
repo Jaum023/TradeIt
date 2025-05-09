@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tradeit_app/shared/widgets/custom_bottom_app_bar.dart';
 
 class ProductDetail extends StatelessWidget {
 
@@ -54,7 +55,7 @@ class ProductDetail extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/create');
+                  Navigator.pushNamed(context, '/chat_teste');
                   // Lógica para iniciar proposta de troca
                   // Exemplo: Navigator.pushNamed(context, '/propor-troca', arguments: produto);
                 },
@@ -63,6 +64,7 @@ class ProductDetail extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: CustomBottomAppBar(currentIndex: 3),
     );
   }
 }

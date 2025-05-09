@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tradeit_app/src/features/chat/domain/entities/chat_message.dart';
 
 class ChatPage extends StatefulWidget {
   final String proposta;
@@ -239,18 +240,4 @@ class _ChatPage extends State<ChatPage> {
       ),
     );
   }
-}
-
-class ChatMessage {
-  final String text;
-  final bool isMe;
-  final String time;
-  final String sender;
-
-  ChatMessage({
-    required this.text,
-    required this.isMe,
-    required this.time,
-    this.sender = '',
-  });
 }

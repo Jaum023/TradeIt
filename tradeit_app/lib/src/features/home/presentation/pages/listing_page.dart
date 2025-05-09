@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tradeit_app/shared/widgets/custom_bottom_app_bar.dart';
 
 class ListingPage extends StatelessWidget {
   final List<Map<String, String>> anuncios = [
@@ -40,6 +41,8 @@ class ListingPage extends StatelessWidget {
           );
         },
       ),
+      bottomNavigationBar: CustomBottomAppBar(currentIndex: 0),
+
     );
   }
 }
