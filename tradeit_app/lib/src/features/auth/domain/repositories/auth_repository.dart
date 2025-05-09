@@ -1,0 +1,1 @@
+// 'Contrato de login, register, etc.'  n entendo mto bem oq seria, tenho q pesquisar melhor

@@ -1,0 +1,1 @@
+// Arquivo q mapeia o user do firebase
