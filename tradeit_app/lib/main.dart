@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'src/routes/routes.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 
@@ -15,7 +16,7 @@ void main() async {
       appId: "1:148647717463:web:c759495c56d43b11129112",
     )
   );
-  runApp(const TradeItApp());
+  runApp(const ProviderScope(child: TradeItApp()));
 }
 
 class TradeItApp extends StatelessWidget {
