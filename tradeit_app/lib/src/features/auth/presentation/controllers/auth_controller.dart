@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tradeit_app/src/features/auth/domain/usecases/login_with_email.dart';
 import 'package:tradeit_app/src/features/auth/domain/usecases/login_with_google.dart';
 import 'package:tradeit_app/src/features/auth/domain/usecases/register_with_email.dart';
 import 'package:tradeit_app/src/features/auth/domain/entities/app_user.dart'; 
+import '../../../../../shared/globalUser.dart';
 
 class AuthController {
   final LoginWithEmail loginWithEmail;
@@ -46,6 +48,7 @@ class AuthController {
     try {
       final AppUser? user = await loginWithEmail(txtEmail.text.trim(), txtPassword.text.trim());
       if (user != null) {
+        currentUser = user;
         Navigator.pushReplacementNamed(context, "/home");
       }
     } catch (e) {

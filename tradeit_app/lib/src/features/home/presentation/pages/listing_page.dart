@@ -1,46 +1,55 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tradeit_app/shared/widgets/custom_bottom_app_bar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tradeit_app/src/features/product_detail/presentation/pages/product_detail.dart';
+
 
 class ListingPage extends StatelessWidget {
-  final List<Map<String, String>> anuncios = [
-    {
-      'titulo': 'Bicicleta',
-      'descricao': 'Bicicleta aro 26 em ótimo estado, aceito skate como troca.',
-    },
-    {
-      'titulo': 'Livro de romance',
-      'descricao': 'Livro novo, troco por outro em bom estado.',
-    },
-    {
-      'titulo': 'Smartphone antigo',
-      'descricao': 'Aparelho funcionando, ideal como reserva.',
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Troca de Produtos'),
-      //   backgroundColor: Colors.teal,
-      // ),
-      body: ListView.builder(
-        itemCount: anuncios.length,
-        itemBuilder: (context, index) {
-          final anuncio = anuncios[index];
-          return Card(
-            margin: EdgeInsets.all(10),
-            child: ListTile(
-              title: Text(anuncio['titulo']!),
-              subtitle: Text(anuncio['descricao']!),
-              leading: Icon(Icons.swap_horiz, color: Colors.deepPurple),
+      body: StreamBuilder<QuerySnapshot>(stream: FirebaseFirestore.instance.collection('ads').snapshots(), 
+        builder: (context, snapshot){
+          if(snapshot.hasError) return Center(child: Text("Erro ${snapshot.error}"));
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data == null) {
+            return Center(child: Text("Nenhum dado disponível."));
+          }
+          final firebaseData = snapshot.data!.docs;
+
+          return ListView.builder(itemCount: firebaseData.length, itemBuilder: (context, index){
+            var ad = firebaseData[index];
+            final data = ad.data() as Map<String, dynamic>?;
+
+            return ListTile(
+              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+
+                  Text(data?['title'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                  SizedBox(height: 4),
+                  
+                  Text(data?['description']),
+                  SizedBox(height: 4),
+                  Text("Categoria: " + data?['category'], style: TextStyle(color: Colors.grey[700]))
+                
+                ],
+              ),
               onTap: () {
-                Navigator.pushNamed(context, '/details', arguments:{'tituloProduto': anuncio['titulo'], 'descricaoProduto': anuncio['descricao']});
+                Navigator.pushNamed(context, '/details', arguments: {'adId': ad.id, 'ownerId':  data?['ownerId']});
               },
-            ),
-          );
-        },
-      ),
+            );
+          });
+        }
+        
+      ), 
       bottomNavigationBar: CustomBottomAppBar(currentIndex: 0),
 
     );

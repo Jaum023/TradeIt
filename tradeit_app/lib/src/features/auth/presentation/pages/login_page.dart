@@ -8,7 +8,6 @@ import 'package:tradeit_app/src/features/auth/domain/usecases/login_with_google.
 import 'package:tradeit_app/src/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:tradeit_app/src/features/auth/data/datasources/firebase_auth_datasource.dart';
 
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -92,6 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           authController.login(context);
+                          
                         }
                       },
                       child: const Text("Login", style: TextStyle(fontSize: 18),),
