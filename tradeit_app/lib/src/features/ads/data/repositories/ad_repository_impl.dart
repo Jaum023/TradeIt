@@ -19,4 +19,18 @@ class AdRepositoryImpl implements AdRepository {
       'createdAt': ad.createdAt.toIso8601String(),
     });
   }
+
+  @override
+  Future<void> updateAd(AdEntity ad) async {
+    final docRef = firestore.collection('ads').doc(ad.id);
+
+    await docRef.update({
+      'title': ad.title,
+      'description': ad.description,
+      'category': ad.category,
+      'condition': ad.condition,
+      'imageUrl': ad.imageUrl,
+      //implementar updatedAt
+    });
+  }
 }

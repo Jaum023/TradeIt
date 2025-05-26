@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tradeit_app/src/features/ads/presentation/controllers/ad_controller.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class EditAdsPage extends StatefulWidget {
   const EditAdsPage({Key? key, required String condition, required String description, required String title, required String categories}) : super(key: key);
@@ -43,6 +46,28 @@ class _EditAdsPageState extends State<EditAdsPage> {
     titleController.dispose();
     descriptionController.dispose();
     super.dispose();
+  }
+
+  void _saveAd() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final adId = args['id'];
+    final ownerId = args['ownerId'];
+
+    final container = ProviderScope.containerOf(context);
+    await container.read(adControllerProvider).updateAdWithExtras(
+      id: adId,
+      title: titleController.text.trim(),
+      description: descriptionController.text.trim(),
+      ownerId: ownerId,
+      category: selectedCategory ?? 'Outros',
+      condition: selectedCondition ?? 'Novo',
+      imageUrl: null, // ou args['imageUrl'] se quiser manter imagem
+    );
+
+    Navigator.of(context).pop();
   }
 
   @override
@@ -192,9 +217,7 @@ class _EditAdsPageState extends State<EditAdsPage> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                // Ação ao salvar o anúncio editado
-              },
+              onPressed: _saveAd,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 side: const BorderSide(color: Colors.deepPurple),
