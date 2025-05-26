@@ -32,6 +32,8 @@ class _CreateAdsPageState extends ConsumerState<CreateAdsPage> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
 
+  final _formKey = GlobalKey<FormState>(); // Adicione esta linha
+
   @override
   void dispose() {
     titleController.dispose();
@@ -40,6 +42,8 @@ class _CreateAdsPageState extends ConsumerState<CreateAdsPage> {
   }
 
   Future<void> _saveAd() async {
+    if (!_formKey.currentState!.validate()) return; // Validação dos campos
+
     final title = titleController.text.trim();
     final description = descriptionController.text.trim();
     final condition = selectedCondition ?? 'Novo';
@@ -78,164 +82,191 @@ class _CreateAdsPageState extends ConsumerState<CreateAdsPage> {
         color: const Color(0xFFF5F5FF),
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              const Text(
-                'Detalhes do Anúncio',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+          child: Form( // Adicione o Form aqui
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                 ),
-              ),
-              const SizedBox(height: 16),
-              GestureDetector(
-                onTap: () {
-                  // Ação futura: selecionar imagem
-                },
-                child: Container(
-                  height: 150,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.deepPurple),
-                    borderRadius: BorderRadius.circular(8.0),
-                    color: const Color(0xFFEDE7F6),
+                const Text(
+                  'Detalhes do Anúncio',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
-                  child: const Center(
-                    child: Text(
-                      'Clique para adicionar uma imagem',
-                      style: TextStyle(color: Colors.black),
+                ),
+                const SizedBox(height: 16),
+                GestureDetector(
+                  onTap: () {
+                    // Ação futura: selecionar imagem
+                  },
+                  child: Container(
+                    height: 150,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.deepPurple),
+                      borderRadius: BorderRadius.circular(8.0),
+                      color: const Color(0xFFEDE7F6),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'Clique para adicionar uma imagem',
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: titleController,
-                decoration: InputDecoration(
-                  labelText: 'Título',
-                  labelStyle: const TextStyle(color: Colors.deepPurple),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(color: Colors.deepPurple),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: titleController,
+                  decoration: InputDecoration(
+                    labelText: 'Título',
+                    labelStyle: const TextStyle(color: Colors.deepPurple),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(color: Colors.deepPurple),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(color: Colors.deepPurple),
+                    ),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(color: Colors.deepPurple),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Título obrigatório';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: descriptionController,
+                  maxLines: 5,
+                  decoration: InputDecoration(
+                    labelText: 'Descrição',
+                    labelStyle: const TextStyle(color: Colors.deepPurple),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(color: Colors.deepPurple),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(color: Colors.deepPurple),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Descrição obrigatória';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: selectedCondition,
+                  items: conditions
+                      .map((condition) => DropdownMenuItem(
+                            value: condition,
+                            child: Text(
+                              condition,
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedCondition = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Condição',
+                    labelStyle: const TextStyle(color: Colors.deepPurple),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(color: Colors.deepPurple),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(color: Colors.deepPurple),
+                    ),
+                  ),
+                  dropdownColor: Colors.white,
+                  isExpanded: true,
+                  icon: const Icon(Icons.arrow_drop_down, color: Colors.deepPurple),
+                  style: const TextStyle(color: Colors.black),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Selecione a condição';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: selectedCategory,
+                  items: categories
+                      .map((category) => DropdownMenuItem(
+                            value: category,
+                            child: Text(
+                              category,
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedCategory = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Categoria',
+                    labelStyle: const TextStyle(color: Colors.deepPurple),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(color: Colors.deepPurple),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(color: Colors.deepPurple),
+                    ),
+                  ),
+                  dropdownColor: Colors.white,
+                  isExpanded: true,
+                  icon: const Icon(Icons.arrow_drop_down, color: Colors.deepPurple),
+                  style: const TextStyle(color: Colors.black),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Selecione a categoria';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _saveAd,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.deepPurple),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  child: const Text(
+                    'Salvar Anúncio',
+                    style: TextStyle(
+                      color: Colors.deepPurple,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: descriptionController,
-                maxLines: 5,
-                decoration: InputDecoration(
-                  labelText: 'Descrição',
-                  labelStyle: const TextStyle(color: Colors.deepPurple),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(color: Colors.deepPurple),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(color: Colors.deepPurple),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: selectedCondition,
-                items: conditions
-                    .map((condition) => DropdownMenuItem(
-                          value: condition,
-                          child: Text(
-                            condition,
-                            style: const TextStyle(color: Colors.black),
-                          ),
-                        ))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedCondition = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  labelText: 'Condição',
-                  labelStyle: const TextStyle(color: Colors.deepPurple),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(color: Colors.deepPurple),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(color: Colors.deepPurple),
-                  ),
-                ),
-                dropdownColor: Colors.white,
-                isExpanded: true,
-                icon: const Icon(Icons.arrow_drop_down, color: Colors.deepPurple),
-                style: const TextStyle(color: Colors.black),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: selectedCategory,
-                items: categories
-                    .map((category) => DropdownMenuItem(
-                          value: category,
-                          child: Text(
-                            category,
-                            style: const TextStyle(color: Colors.black),
-                          ),
-                        ))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedCategory = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  labelText: 'Categoria',
-                  labelStyle: const TextStyle(color: Colors.deepPurple),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(color: Colors.deepPurple),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(color: Colors.deepPurple),
-                  ),
-                ),
-                dropdownColor: Colors.white,
-                isExpanded: true,
-                icon: const Icon(Icons.arrow_drop_down, color: Colors.deepPurple),
-                style: const TextStyle(color: Colors.black),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _saveAd,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  side: const BorderSide(color: Colors.deepPurple),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                child: const Text(
-                  'Salvar Anúncio',
-                  style: TextStyle(
-                    color: Colors.deepPurple,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

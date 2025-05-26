@@ -27,24 +27,32 @@ class ListingPage extends StatelessWidget {
             var ad = firebaseData[index];
             final data = ad.data() as Map<String, dynamic>?;
 
-            return ListTile(
-              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-
-                  Text(data?['title'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
-                  SizedBox(height: 4),
-                  
-                  Text(data?['description']),
-                  SizedBox(height: 4),
-                  Text("Categoria: " + data?['category'], style: TextStyle(color: Colors.grey[700]))
-                
-                ],
+            return Container(
+              margin: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 1)
               ),
-              onTap: () {
-                Navigator.pushNamed(context, '/details', arguments: {'adId': ad.id, 'ownerId':  data?['ownerId']});
-              },
+              child: ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                subtitle: Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                  
+                      Text(data?['title'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                      SizedBox(height: 4),
+                      
+                      Text(data?['description']),
+                      SizedBox(height: 4),
+                      Text("Categoria: " + data?['category'], style: TextStyle(color: Colors.grey[700]))
+                    
+                    ],
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pushNamed(context, '/details', arguments: {'adId': ad.id, 'ownerId':  data?['ownerId']});
+                },
+              ),
             );
           });
         }

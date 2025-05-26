@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:tradeit_app/shared/widgets/custom_bottom_app_bar.dart';
 import 'package:intl/intl.dart';
+import 'package:tradeit_app/src/features/product_detail/presentation/controller/produtController.dart';
 import '../../../../../shared/globalUser.dart';
 
 class ProductDetail extends StatelessWidget {
@@ -20,27 +23,28 @@ class ProductDetail extends StatelessWidget {
       return Scaffold(body: Center(child: Text('ID não encontrado')));
     }  
 
+    final controller = Get.put(ProductDetailController(adId), tag: adId);
+
     return Scaffold(
       appBar: AppBar(title: Text("Detalhes do Produto")),
       body: FutureBuilder<DocumentSnapshot>(
         future: FirebaseFirestore.instance.collection('ads').doc(adId).get(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting)
+          if (controller.isLoading.value)
             return Center(child: CircularProgressIndicator());
 
-          if (!snapshot.hasData || !snapshot.data!.exists) {
+          if (controller.errorMessage.isNotEmpty)
+            return Center(child: Text("Erro: ${controller.errorMessage.value}"));
+
+          final data = controller.adData.value;
+
+          if (data == null) {
             return Center(child: Text('Anúncio não encontrado')) ;
           }
-
-          if (snapshot.hasError)
-            return Center(child: Text("Erro: ${snapshot.error}"));
-
-          final data = snapshot.data!.data() as Map<String, dynamic>;
-
           final createdAt = data['createdAt'];
           final date = DateTime.parse(createdAt);
           final formattedDate = DateFormat('dd/mm/yyyy').format(date!);
-
+          // print(data);
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
