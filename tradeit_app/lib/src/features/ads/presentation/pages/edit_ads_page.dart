@@ -35,10 +35,12 @@ class _EditAdsPageState extends State<EditAdsPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    titleController = TextEditingController(text: args['title']);
-    descriptionController = TextEditingController(text: args['description']);
-    selectedCondition = args['condition'];
-    selectedCategory = args['category'];
+    final data = args['dataProduct'] as Map<String, dynamic>;
+
+    titleController = TextEditingController(text: data['title']);
+    descriptionController = TextEditingController(text: data['description']);
+    selectedCondition = data['condition'];
+    selectedCategory = data['category'];
   }
 
   @override
@@ -53,8 +55,12 @@ class _EditAdsPageState extends State<EditAdsPage> {
     if (user == null) return;
 
     final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final adId = args['id'];
-    final ownerId = args['ownerId'];
+    print('args: $args');
+
+    final adId = args['adId'] as String;
+    final data = args['dataProduct'] as Map<String, dynamic>;
+    final ownerId = data['ownerId'] as String;
+    final imageUrl = data['imageUrl'] as String?;
 
     final container = ProviderScope.containerOf(context);
     await container.read(adControllerProvider).updateAdWithExtras(
@@ -64,7 +70,7 @@ class _EditAdsPageState extends State<EditAdsPage> {
       ownerId: ownerId,
       category: selectedCategory ?? 'Outros',
       condition: selectedCondition ?? 'Novo',
-      imageUrl: null, // ou args['imageUrl'] se quiser manter imagem
+      imageUrl: imageUrl,
     );
 
     Navigator.of(context).pop();

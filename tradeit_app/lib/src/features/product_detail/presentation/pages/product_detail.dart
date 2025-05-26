@@ -102,6 +102,7 @@ class ProductDetail extends StatelessWidget {
                   onPressed: () {
                     if (isOwner) {
                       Navigator.pushNamed(context, '/edit', arguments: {'dataProduct' : data, 'adId': adId}); // ou adId
+
                     } else {
                       Navigator.pushNamed(context, '/chat_teste', arguments: data); // ou adId
                     }

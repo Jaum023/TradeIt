@@ -10,6 +10,20 @@ class ListingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('TradeIt'),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        elevation: 4.0, // sombra inferior
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              // ação futura de busca
+            },
+          ),
+        ],
+      ),
       body: StreamBuilder<QuerySnapshot>(stream: FirebaseFirestore.instance.collection('ads').snapshots(), 
         builder: (context, snapshot){
           if(snapshot.hasError) return Center(child: Text("Erro ${snapshot.error}"));
