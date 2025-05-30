@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ProductDetailController extends GetxController {
-  final String adId;
+class UserAdProductController extends GetxController {
+  final String userAd;
 
-  ProductDetailController(this.adId);
+  UserAdProductController(this.userAd);
 
   final isLoading = true.obs;
   final errorMessage = ''.obs;
@@ -22,8 +22,8 @@ class ProductDetailController extends GetxController {
       isLoading.value = true;
 
       DocumentSnapshot doc =
-          await FirebaseFirestore.instance.collection('ads').doc(adId).get();
-
+        await FirebaseFirestore.instance.collection('user').doc(userAd).get();
+        
       if (doc.exists) {
         adData.value = doc.data() as Map<String, dynamic>;
 

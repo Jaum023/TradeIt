@@ -5,6 +5,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:tradeit_app/shared/widgets/custom_bottom_app_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:tradeit_app/src/features/product_detail/presentation/controller/produtController.dart';
+import 'package:tradeit_app/src/features/product_detail/presentation/controller/userAdProductController.dart';
 import '../../../../../shared/globalUser.dart';
 
 class ProductDetail extends StatelessWidget {
@@ -44,7 +45,6 @@ class ProductDetail extends StatelessWidget {
           final createdAt = data['createdAt'];
           final date = DateTime.parse(createdAt);
           final formattedDate = DateFormat('dd/mm/yyyy').format(date!);
-          // print(data);
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -80,6 +80,13 @@ class ProductDetail extends StatelessWidget {
                 (data['category'] != null && data['category'].toString().isNotEmpty)
                   ? "Categoria: " + data['category']
                   : 'Categoria não disponível',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 10),
+              Text(
+                (data?['userName'] != null && data!['userName'].toString().isNotEmpty)
+                  ? "Criado por: " + data['userName']
+                  : "Criador do anúncio não encontrado",
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 10),
