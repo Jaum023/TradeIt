@@ -18,8 +18,8 @@ return datasource.signInWithGoogle();
 }
 
 @override
-Future<AppUser?> registerWithEmail(String email, String password) {
-return datasource.registerWithEmail(email, password);
+Future<AppUser?> registerWithEmail(String email, String password, String name) {
+  return datasource.registerWithEmail(email, password, name);
 }
 
 @override

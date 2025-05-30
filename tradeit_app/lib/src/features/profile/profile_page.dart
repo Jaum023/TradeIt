@@ -1,14 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:tradeit_app/shared/widgets/custom_bottom_app_bar.dart';
+import 'package:tradeit_app/src/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:tradeit_app/src/features/auth/domain/usecases/logout.dart';
+import 'package:tradeit_app/src/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:tradeit_app/src/features/auth/data/datasources/firebase_auth_datasource.dart';
+import 'package:tradeit_app/shared/globalUser.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+
+
+class _ProfilePageState extends State<ProfilePage> {
+  late final AuthController authController;
+  late final AuthRepositoryImpl authRepository;
+
+  @override
+  void initState() {
+    super.initState();
+    authRepository = AuthRepositoryImpl(FirebaseAuthDatasource());
+    authController = AuthController.logout(
+      logoutUseCase: Logout(authRepository),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final String nome = 'João da Silva';
-    final String email = 'joao@email.com';
-    final String? fotoUrl = null; 
+    final String nome = currentUser?.name ?? 'Nome não disponível';
+    final String email = currentUser?.email ?? 'Email não disponível';
+    final String? fotoUrl = null; //currentUser?.photoUrl;
 
     return Scaffold(
       appBar: AppBar(
@@ -18,7 +42,7 @@ class ProfilePage extends StatelessWidget {
             icon: const Icon(Icons.logout),
             tooltip: 'Sair',
             onPressed: () {
-              Navigator.pushNamed(context, '/login');
+              authController.logoutUser(context);
             },
           ),
         ],
@@ -30,9 +54,8 @@ class ProfilePage extends StatelessWidget {
             Center(
               child: CircleAvatar(
                 radius: 50,
-                backgroundImage: fotoUrl != null
-                    ? NetworkImage(fotoUrl)
-                    : null,
+                backgroundImage:
+                    fotoUrl != null ? NetworkImage(fotoUrl) : null,
                 child: fotoUrl == null
                     ? const Icon(Icons.person, size: 50)
                     : null,

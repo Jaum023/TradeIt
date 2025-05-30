@@ -1,5 +1,6 @@
 // lib/src/features/auth/data/datasources/firebase_auth_datasource.dart
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'auth_datasource.dart';
 import 'package:tradeit_app/src/features/auth/domain/entities/app_user.dart'; 
 
@@ -34,14 +35,24 @@ class FirebaseAuthDatasource implements AuthDatasource {
   }
 
   @override
-  Future<AppUser?> registerWithEmail(String email, String password) async {
-  final result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-    email: email,
-    password: password,
-  );
-  final user = result.user;
-  return user != null ? _mapFirebaseUserToAppUser(user) : null;
-}
+  Future<AppUser?> registerWithEmail(String email, String password, String name) async {
+    final result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    final user = result.user;
+    if (user != null) {
+      await user.updateDisplayName(name);
+      await user.reload();
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'email': email,
+        'name': name,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      return _mapFirebaseUserToAppUser(user);
+    }
+    return null;
+  }
 
   @override
   AppUser? get currentAppUser {

@@ -6,7 +6,7 @@ class RegisterWithEmail {
 
   RegisterWithEmail(this.repository);
 
-  Future<AppUser?> call(String email, String password) {
-    return repository.registerWithEmail(email, password);
+  Future<AppUser?> call(String email, String password, String name) {
+    return repository.registerWithEmail(email, password, name);
   }
 }
