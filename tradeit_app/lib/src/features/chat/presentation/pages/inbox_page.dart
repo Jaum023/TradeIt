@@ -1,69 +1,71 @@
 import 'package:flutter/material.dart';
-import 'chat_page.dart'; // Assumindo que a TelaChat esteja no mesmo diretório
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
+import 'chat_page.dart';
+import 'package:tradeit_app/shared/widgets/custom_bottom_app_bar.dart';
 
 class InboxPage extends StatelessWidget {
   InboxPage({super.key});
 
-  // Dados fictícios (simulando o backend)
-  final List<Map<String, dynamic>> propostas = [
-    {
-      'titulo': 'LIVRO - BICICLETA',
-      'ultimaMensagem': 'oi amigo',
-      'usuario': 'CARLOS',
-      'hora': '10:30',
-    },
-    {
-      'titulo': 'VIOLÃO - BICICLETA',
-      'ultimaMensagem': 'É uma marca boa esse meu violão!',
-      'usuario': 'GILMAR',
-      'hora': 'Ontem',
-    },
-  ];
-
-  // Função para formatar a hora
-  String _formatarHora(String hora) {
-    if (hora == 'Ontem') {
-      return 'Ontem';
-    }
-    return 'Hoje às $hora'; // Exibe a hora para o caso de ser "Hoje"
-  }
-
   @override
   Widget build(BuildContext context) {
+    final currentUid = FirebaseAuth.instance.currentUser?.uid;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF1B202D),
       appBar: AppBar(
-        title: const Text("Propostas", style: TextStyle(color: Colors.white)),
+        title: const Text("Propostas", style: TextStyle(color: Colors.blue)),
         backgroundColor: const Color(0xFF1B202D),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.blue),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: propostas.length,
-        itemBuilder: (context, index) {
-          final proposta = propostas[index];
-          return _buildProposta(
-            titulo: proposta['titulo'],
-            ultimaMensagem: proposta['ultimaMensagem'],
-            hora: proposta['hora'],
-            onTap: () {
-              // Passando as mensagens para a TelaChat
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChatPage(
-                    proposta: proposta['titulo'],
-                    usuario: proposta['usuario'],
-                    mensagensIniciais: [
-                      // Mensagens iniciais simuladas
-                    ],
-                  ),
-                ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('inbox')
+            .where('usuarios', arrayContains: currentUid)
+            .orderBy('timestamp', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final propostas = snapshot.data!.docs;
+          if (propostas.isEmpty) {
+            return const Center(child: Text('Nenhuma conversa ainda.', style: TextStyle(color: Colors.white)));
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: propostas.length,
+            itemBuilder: (context, index) {
+              final proposta = propostas[index].data() as Map<String, dynamic>;
+              final nomes = proposta['nomes'] as List<dynamic>;
+              final outroNome = nomes.firstWhere(
+                (n) => n != FirebaseAuth.instance.currentUser?.displayName,
+                orElse: () => 'Outro usuário',
+              );
+              return _buildProposta(
+                titulo: proposta['proposta'] ?? '',
+                ultimaMensagem: proposta['ultimaMensagem'] ?? '',
+                hora: proposta['timestamp'] != null && proposta['timestamp'] is Timestamp
+                    ? DateFormat('HH:mm').format((proposta['timestamp'] as Timestamp).toDate())
+                    : '',
+                usuario: outroNome,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatPage(
+                        proposta: proposta['proposta'],
+                        usuario: outroNome,
+                      ),
+                    ),
+                  );
+                },
               );
             },
           );
         },
       ),
+      bottomNavigationBar: CustomBottomAppBar(currentIndex: 3),
     );
   }
 
@@ -71,6 +73,7 @@ class InboxPage extends StatelessWidget {
     required String titulo,
     required String ultimaMensagem,
     required String hora,
+    required String usuario,
     required VoidCallback onTap,
   }) {
     return Column(
@@ -95,7 +98,7 @@ class InboxPage extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           trailing: Text(
-            _formatarHora(hora), // Usando a função de formatação de hora
+            hora,
             style: const TextStyle(
               color: Colors.white54,
               fontSize: 12,
@@ -107,18 +110,4 @@ class InboxPage extends StatelessWidget {
       ],
     );
   }
-}
-
-class ChatMessage {
-  final String text;
-  final bool isMe;
-  final String time;
-  final String sender;
-
-  ChatMessage({
-    required this.text,
-    required this.isMe,
-    required this.time,
-    required this.sender,
-  });
 }
