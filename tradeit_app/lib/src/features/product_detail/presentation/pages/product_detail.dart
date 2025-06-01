@@ -58,6 +58,8 @@ class ProductDetail extends StatelessWidget {
 
           final List<String> images = List<String>.from(data['imageUrls'] ?? []);
 
+          final List<String> images = List<String>.from(data['imageUrls'] ?? []);
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
