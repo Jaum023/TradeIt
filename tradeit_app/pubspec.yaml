@@ -20,6 +20,8 @@ dependencies:
 
   # Ícones e imagens de rede
   cached_network_image: ^3.3.1
+  image_picker: ^1.0.7
+  http: ^1.2.1
 
   # Outros úteis
   equatable: ^2.0.5
@@ -41,4 +43,10 @@ flutter:
   # - family: Montserrat
   #   fonts:
   #     - asset: assets/fonts/Montserrat-Regular.ttf
+<<<<<<< Updated upstream
       
+=======
+
+
+
+>>>>>>> Stashed changes

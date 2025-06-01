@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:tradeit_app/shared/widgets/custom_bottom_app_bar.dart';
+<<<<<<< Updated upstream
+=======
+import 'package:intl/intl.dart';
+import 'package:tradeit_app/src/features/product_detail/presentation/controller/produtController.dart';
+import 'package:tradeit_app/src/features/product_detail/presentation/controller/userAdProductController.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../../shared/globalUser.dart';
+>>>>>>> Stashed changes
 
 class ProductDetail extends StatelessWidget {
 
@@ -43,7 +51,40 @@ class ProductDetail extends StatelessWidget {
             SizedBox(height: 8),
             Text(descricaoProduto ?? "Descrição não encontrada", style: TextStyle(fontSize: 16)),
 
+<<<<<<< Updated upstream
             SizedBox(height: 40),
+=======
+          final List<String> images = List<String>.from(data['imageUrls'] ?? []);
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Imagem do produto
+              SizedBox(height: 20),
+              Center(child: Text("Imagem Produto")),
+              SizedBox(height: 25),
+              if (images.isNotEmpty)
+                SizedBox(
+                  height: 200,
+                  child: PageView.builder(
+                    itemCount: images.length,
+                    itemBuilder: (context, idx) => CachedNetworkImage(
+                      imageUrl: images[idx],
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                )
+              else
+                Center(child: Text("Sem imagem")),
+
+              // Nome do produto
+              Text(
+                (data['title'] != null && data['title'].toString().isNotEmpty)
+                  ? "Título: " + data['title']
+                  : 'Título não disponível',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+>>>>>>> Stashed changes
 
             // Botão para propor troca
             Center(
