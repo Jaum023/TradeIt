@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:tradeit_app/shared/widgets/custom_bottom_app_bar.dart';
 import 'package:tradeit_app/src/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tradeit_app/src/features/auth/domain/usecases/logout.dart';
@@ -31,7 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final String nome = currentUser?.name ?? 'Nome não disponível';
     final String email = currentUser?.email ?? 'Email não disponível';
-    final String? fotoUrl = null;//currentUser?.photoUrl;
+    final String? fotoUrl = null; //currentUser?.photoUrl;
 
     return Scaffold(
       appBar: AppBar(
@@ -53,28 +54,20 @@ class _ProfilePageState extends State<ProfilePage> {
             Center(
               child: CircleAvatar(
                 radius: 50,
-                backgroundImage:
-                    fotoUrl != null ? NetworkImage(fotoUrl) : null,
-                child: fotoUrl == null
-                    ? const Icon(Icons.person, size: 50)
-                    : null,
+                backgroundImage: fotoUrl != null ? NetworkImage(fotoUrl) : null,
+                child:
+                    fotoUrl == null ? const Icon(Icons.person, size: 50) : null,
               ),
             ),
             const SizedBox(height: 16),
             Text(
               nome,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
               email,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 30),
             ElevatedButton.icon(
@@ -86,6 +79,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 );
               },
             ),
+            const SizedBox(height: 8),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.favorite),
+              label: const Text('  Favoritos  '),
+              onPressed: () {
+                Navigator.pushNamed(context, '/favorites');
+              },
+            ),
             const SizedBox(height: 30),
             const Text(
               "Meus anúncios",
@@ -93,16 +94,19 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 10),
             StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('ads')
-                  .where('ownerId', isEqualTo: currentUser?.id)
-                  .snapshots(),
+              stream:
+                  FirebaseFirestore.instance
+                      .collection('ads')
+                      .where('ownerId', isEqualTo: currentUser?.id)
+                      .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasError) {
-                  return const Center(child: Text('Erro ao carregar anúncios.'));
+                  return const Center(
+                    child: Text('Erro ao carregar anúncios.'),
+                  );
                 }
 
                 final docs = snapshot.data?.docs ?? [];
@@ -119,32 +123,84 @@ class _ProfilePageState extends State<ProfilePage> {
                   itemCount: docs.length,
                   itemBuilder: (context, index) {
                     final data = docs[index].data() as Map<String, dynamic>;
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                      ),
-                      child: ListTile(
-                        title: Text(
-                          data['title'] ?? '',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          '/details',
+                          arguments: {
+                            'adId': docs[index].id,
+                            'ownerId': data['ownerId'],
+                          },
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.white,
                         ),
-                        subtitle: Column(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(data['description'] ?? ''),
-                            Text(
-                              "Categoria: ${data['category'] ?? ''}",
-                              style: TextStyle(color: Colors.grey[700]),
+                            ClipRRect(
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(12),
+                              ),
+                              child:
+                                  (data['imageUrls'] != null &&
+                                          (data['imageUrls'] as List)
+                                              .isNotEmpty)
+                                      ? Image.network(
+                                        (data['imageUrls'] as List).first,
+                                        width: double.infinity,
+                                        height: 200,
+                                        fit: BoxFit.fill,
+                                        filterQuality: FilterQuality.high,
+                                      )
+                                      : Container(
+                                        width: double.infinity,
+                                        height: 200,
+                                        color: Colors.grey[300],
+                                        child: const Icon(
+                                          Icons.image_not_supported,
+                                          size: 60,
+                                        ),
+                                      ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    data['title'] ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    "Localização: (exemplo)",
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    "Categoria: ${data['category'] ?? ''}",
+                                    style: TextStyle(
+                                      color: Colors.grey[700],
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                        onTap: () {
-                          Navigator.pushNamed(context, '/details', arguments: {
-                            'adId': docs[index].id,
-                            'ownerId': data['ownerId'],
-                          });
-                        },
                       ),
                     );
                   },
