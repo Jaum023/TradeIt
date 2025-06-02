@@ -156,11 +156,12 @@ class _ListingPageState extends State<ListingPage> {
                   return Center(child: Text("Nenhum anúncio disponível para os filtros aplicados."));
                 }
 
-                return ListView.builder(
-                  itemCount: firebaseData.length,
-                  itemBuilder: (context, index) {
-                    var ad = firebaseData[index];
-                    final data = ad.data() as Map<String, dynamic>?;
+          return ListView.builder(
+            itemCount: firebaseData.length,
+            itemBuilder: (context, index) {
+              var ad = firebaseData[index];
+              final data = ad.data() as Map<String, dynamic>?;
+              final List<String> images = List<String>.from(data?['imageUrls'] ?? []);
 
                     return Container(
                       margin: EdgeInsets.all(15),
@@ -169,6 +170,17 @@ class _ListingPageState extends State<ListingPage> {
                       ),
                       child: ListTile(
                         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  leading: images.isNotEmpty
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            images.first,
+                            width: 60,
+                            height: 60,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : Icon(Icons.image, size: 60, color: Colors.grey),
                         subtitle: Center(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,

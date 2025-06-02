@@ -46,6 +46,8 @@ class ProductDetail extends StatelessWidget {
           final date = DateTime.parse(createdAt);
           final formattedDate = DateFormat('dd/mm/yyyy').format(date!);
 
+          final List<String> images = List<String>.from(data['imageUrls'] ?? []);
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -94,6 +96,23 @@ class ProductDetail extends StatelessWidget {
                 "Criado em: " + formattedDate,
                 style: TextStyle(fontSize: 16),
               ),
+
+              SizedBox(height: 20),
+
+              // Imagens do produto
+              if (images.isNotEmpty)
+                SizedBox(
+                  height: 200,
+                  child: PageView.builder(
+                    itemCount: images.length,
+                    itemBuilder: (context, idx) => Image.network(
+                      images[idx],
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                )
+              else
+                Center(child: Text("Sem imagem")),
 
               SizedBox(height: 40),
 

@@ -15,6 +15,7 @@ class CreateAd {
       category: ad.category,
       condition: ad.condition,
       imageUrl: ad.imageUrl,
+      imageUrls: ad.imageUrls,
       ownerId: ad.ownerId,
       createdAt: ad.createdAt,
       userName: ad.userName,

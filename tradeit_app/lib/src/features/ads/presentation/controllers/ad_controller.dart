@@ -24,8 +24,8 @@ class AdController {
     required String category,
     required String condition,
     String? imageUrl,
+    required List<String> imageUrls, 
     String? userName = '',
-  
   }) async {
     final ad = AdEntity(
       id: const Uuid().v4(),
@@ -35,9 +35,10 @@ class AdController {
       category: category,
       condition: condition,
       imageUrl: imageUrl,
+      imageUrls: imageUrls,
       ownerId: ownerId,
-      createdAt: DateTime.now(), 
-      userName:  userName ?? '',
+      createdAt: DateTime.now(),
+      userName: userName ?? '',
     );
 
     await createAd(ad);
@@ -51,6 +52,8 @@ class AdController {
     required String category,
     required String condition,
     String? imageUrl,
+    required List<String> imageUrls, 
+    String? userName = '',
   }) async {
     final updatedAd = AdEntity(
       id: id,
@@ -60,9 +63,10 @@ class AdController {
       category: category,
       condition: condition,
       imageUrl: imageUrl,
+      imageUrls: imageUrls, 
       ownerId: ownerId,
       createdAt: DateTime.now(),
-      userName: '',
+      userName: userName ?? '',
     );
 
     await updateAd(updatedAd);
