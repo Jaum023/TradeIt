@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tradeit_app/shared/widgets/custom_bottom_app_bar.dart';
 import 'package:tradeit_app/src/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tradeit_app/src/features/auth/domain/usecases/logout.dart';
@@ -12,8 +13,6 @@ class ProfilePage extends StatefulWidget {
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
-
-
 
 class _ProfilePageState extends State<ProfilePage> {
   late final AuthController authController;
@@ -32,7 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final String nome = currentUser?.name ?? 'Nome não disponível';
     final String email = currentUser?.email ?? 'Email não disponível';
-    final String? fotoUrl = null; //currentUser?.photoUrl;
+    final String? fotoUrl = null;//currentUser?.photoUrl;
 
     return Scaffold(
       appBar: AppBar(
@@ -47,7 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
@@ -84,6 +83,71 @@ class _ProfilePageState extends State<ProfilePage> {
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Segredo dos amigos')),
+                );
+              },
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              "Meus anúncios",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('ads')
+                  .where('ownerId', isEqualTo: currentUser?.id)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return const Center(child: Text('Erro ao carregar anúncios.'));
+                }
+
+                final docs = snapshot.data?.docs ?? [];
+                if (docs.isEmpty) {
+                  return const Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: Text('Você ainda não criou nenhum anúncio.'),
+                  );
+                }
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    final data = docs[index].data() as Map<String, dynamic>;
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                      ),
+                      child: ListTile(
+                        title: Text(
+                          data['title'] ?? '',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(data['description'] ?? ''),
+                            Text(
+                              "Categoria: ${data['category'] ?? ''}",
+                              style: TextStyle(color: Colors.grey[700]),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          Navigator.pushNamed(context, '/details', arguments: {
+                            'adId': docs[index].id,
+                            'ownerId': data['ownerId'],
+                          });
+                        },
+                      ),
+                    );
+                  },
                 );
               },
             ),

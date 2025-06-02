@@ -127,18 +127,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   SizedBox(height: 15),
-                  Column(
-                    children: [
-                      Text('Registre-se por', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(onPressed: null, icon: SizedBox(height: 50,child: Image.asset('assets/images/google_logo.png'))),
-                          IconButton(onPressed: null, icon: SizedBox(height: 60,child: Image.asset('assets/images/facebook_logo.png')))
-                        ],
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
