@@ -7,6 +7,19 @@ class CreateAd {
   CreateAd(this.repository);
 
   Future<void> call(AdEntity ad) {
-    return repository.createAd(ad);
+    final adWithLowercase = AdEntity(
+      id: ad.id,
+      title: ad.title,
+      titleLowercase: ad.title.toLowerCase(),
+      description: ad.description,
+      category: ad.category,
+      condition: ad.condition,
+      imageUrl: ad.imageUrl,
+      ownerId: ad.ownerId,
+      createdAt: ad.createdAt,
+      userName: ad.userName,
+    );
+
+    return repository.createAd(adWithLowercase);
   }
 }

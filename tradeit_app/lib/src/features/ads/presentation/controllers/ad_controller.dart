@@ -24,16 +24,20 @@ class AdController {
     required String category,
     required String condition,
     String? imageUrl,
+    String? userName = '',
+  
   }) async {
     final ad = AdEntity(
       id: const Uuid().v4(),
       title: title,
+      titleLowercase: title.toLowerCase(),
       description: description,
       category: category,
       condition: condition,
       imageUrl: imageUrl,
       ownerId: ownerId,
-      createdAt: DateTime.now(),
+      createdAt: DateTime.now(), 
+      userName:  userName ?? '',
     );
 
     await createAd(ad);
@@ -51,12 +55,14 @@ class AdController {
     final updatedAd = AdEntity(
       id: id,
       title: title,
+      titleLowercase: title.toLowerCase(),
       description: description,
       category: category,
       condition: condition,
       imageUrl: imageUrl,
       ownerId: ownerId,
       createdAt: DateTime.now(),
+      userName: '',
     );
 
     await updateAd(updatedAd);

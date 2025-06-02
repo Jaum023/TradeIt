@@ -5,26 +5,85 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tradeit_app/src/features/product_detail/presentation/pages/product_detail.dart';
 
 
-class ListingPage extends StatelessWidget {
+class ListingPage extends StatefulWidget {
+
+  @override
+  _ListingPageState createState() => _ListingPageState();
+}
+
+class _ListingPageState extends State<ListingPage> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  bool _isSearching = false;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final query = _searchQuery.trim().toLowerCase();
+
+    final adsStream = query.isEmpty
+        ? FirebaseFirestore.instance.collection('ads').snapshots()
+        : FirebaseFirestore.instance
+            .collection('ads')
+            .where('titleLowercase', isGreaterThanOrEqualTo: query)
+            .where('titleLowercase', isLessThanOrEqualTo: query + '\uf8ff')
+            .snapshots();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('TradeIt'),
+        // backgroundColor: Colors.deepPurple,
+        elevation: 4.0,
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Buscar anúncio...',
+                  border: InputBorder.none,
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.clear, color: Colors.black),
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() {
+                        _searchQuery = '';
+                        _isSearching = false;
+                      });
+                    },
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                },
+              )
+            : const Text(
+                'TradeIt',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
         centerTitle: true,
-        automaticallyImplyLeading: false,
-        elevation: 4.0, // sombra inferior
         actions: [
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              // ação futura de busca
-            },
-          ),
+          if (!_isSearching)
+            IconButton(
+              icon: Icon(Icons.search, color: Colors.black),
+              onPressed: () {
+                setState(() {
+                  _isSearching = true;
+                });
+              },
+            ),
         ],
       ),
-      body: StreamBuilder<QuerySnapshot>(stream: FirebaseFirestore.instance.collection('ads').snapshots(), 
+      body: StreamBuilder<QuerySnapshot>(
+        stream: adsStream,
         builder: (context, snapshot){
           if(snapshot.hasError) return Center(child: Text("Erro ${snapshot.error}"));
 
@@ -53,12 +112,12 @@ class ListingPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                   
-                      Text(data?['title'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                      Text(data?['title'] ?? '', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
                       SizedBox(height: 4),
                       
-                      Text(data?['description']),
+                      Text(data?['description'] ?? ''),
                       SizedBox(height: 4),
-                      Text("Categoria: " + data?['category'], style: TextStyle(color: Colors.grey[700]))
+                      Text("Categoria: " + (data?['category'] ?? ''), style: TextStyle(color: Colors.grey[700]))
                     
                     ],
                   ),

@@ -7,6 +7,19 @@ class UpdateAd {
   UpdateAd(this.repository);
 
   Future<void> call(AdEntity ad) async {
-    await repository.updateAd(ad);
+    final adWithLowercase = AdEntity(
+      id: ad.id,
+      title: ad.title,
+      titleLowercase: ad.title.toLowerCase(),
+      description: ad.description,
+      category: ad.category,
+      condition: ad.condition,
+      imageUrl: ad.imageUrl,
+      ownerId: ad.ownerId,
+      createdAt: ad.createdAt,
+      userName: ad.userName,
+    );
+
+    await repository.updateAd(adWithLowercase);
   }
 }

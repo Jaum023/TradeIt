@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tradeit_app/shared/globalUser.dart';
 import 'package:tradeit_app/src/features/ads/presentation/controllers/ad_controller.dart';
 
 class CreateAdsPage extends ConsumerStatefulWidget {
@@ -48,6 +49,7 @@ class _CreateAdsPageState extends ConsumerState<CreateAdsPage> {
     final description = descriptionController.text.trim();
     final condition = selectedCondition ?? 'Novo';
     final category = selectedCategory ?? 'Outros';
+    
 
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -65,6 +67,7 @@ class _CreateAdsPageState extends ConsumerState<CreateAdsPage> {
             category: category,
             condition: condition,
             imageUrl: null, // Adicionar upload no futuro
+            userName: currentUser?.name,
           );
 
       Navigator.of(context).pop(); // voltar após salvar

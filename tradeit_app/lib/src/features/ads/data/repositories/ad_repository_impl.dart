@@ -11,12 +11,14 @@ class AdRepositoryImpl implements AdRepository {
   Future<void> createAd(AdEntity ad) async {
     await firestore.collection('ads').doc(ad.id).set({
       'title': ad.title,
+      'titleLowercase': ad.title.toLowerCase(),
       'description': ad.description,
       'category': ad.category,
       'condition': ad.condition,
       'imageUrl': ad.imageUrl,
       'ownerId': ad.ownerId,
       'createdAt': ad.createdAt.toIso8601String(),
+      'userName': ad.userName,
     });
   }
 
@@ -26,6 +28,7 @@ class AdRepositoryImpl implements AdRepository {
 
     await docRef.update({
       'title': ad.title,
+      'titleLowercase': ad.title.toLowerCase(),
       'description': ad.description,
       'category': ad.category,
       'condition': ad.condition,
