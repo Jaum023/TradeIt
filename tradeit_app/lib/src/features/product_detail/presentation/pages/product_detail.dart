@@ -102,6 +102,11 @@ class ProductDetail extends StatelessWidget {
                         data['userName'] ?? 'Criador do anúncio não encontrado',
                         style: TextStyle(fontSize: 16),
                       ),
+                      SizedBox(height: 3),
+                      Text(
+                        "localizacao teste: cidade X, estado",
+                        style: TextStyle(fontSize: 16),
+                      ),
 
                       SizedBox(height: 16),
                       Divider(),
