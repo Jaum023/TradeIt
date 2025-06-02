@@ -16,6 +16,7 @@ class AdRepositoryImpl implements AdRepository {
       'category': ad.category,
       'condition': ad.condition,
       'imageUrl': ad.imageUrl,
+      'imageUrls': ad.imageUrls, 
       'ownerId': ad.ownerId,
       'createdAt': ad.createdAt.toIso8601String(),
       'userName': ad.userName,
@@ -33,6 +34,7 @@ class AdRepositoryImpl implements AdRepository {
       'category': ad.category,
       'condition': ad.condition,
       'imageUrl': ad.imageUrl,
+      'imageUrls': ad.imageUrls, 
       //implementar updatedAt
     });
   }

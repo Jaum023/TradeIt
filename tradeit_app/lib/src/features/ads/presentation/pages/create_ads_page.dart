@@ -3,6 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tradeit_app/shared/globalUser.dart';
 import 'package:tradeit_app/src/features/ads/presentation/controllers/ad_controller.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:tradeit_app/shared/cloudinary_helper.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class CreateAdsPage extends ConsumerStatefulWidget {
   const CreateAdsPage({Key? key}) : super(key: key);
@@ -33,7 +38,10 @@ class _CreateAdsPageState extends ConsumerState<CreateAdsPage> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
 
-  final _formKey = GlobalKey<FormState>(); // Adicione esta linha
+  final _formKey = GlobalKey<FormState>();
+
+  List<String> imageUrls = [];
+  bool isUploading = false;
 
   @override
   void dispose() {
@@ -43,13 +51,12 @@ class _CreateAdsPageState extends ConsumerState<CreateAdsPage> {
   }
 
   Future<void> _saveAd() async {
-    if (!_formKey.currentState!.validate()) return; // Validação dos campos
+    if (!_formKey.currentState!.validate()) return;
 
     final title = titleController.text.trim();
     final description = descriptionController.text.trim();
     final condition = selectedCondition ?? 'Novo';
     final category = selectedCategory ?? 'Outros';
-    
 
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -66,16 +73,48 @@ class _CreateAdsPageState extends ConsumerState<CreateAdsPage> {
             ownerId: user.uid,
             category: category,
             condition: condition,
-            imageUrl: null, // Adicionar upload no futuro
+            imageUrl: imageUrls.isNotEmpty ? imageUrls.first : null,
+            imageUrls: imageUrls,
             userName: currentUser?.name,
           );
 
-      Navigator.of(context).pop(); // voltar após salvar
+      Navigator.of(context).pop();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erro ao criar anúncio: $e')),
       );
     }
+  }
+
+  Future<void> _pickAndUploadImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    if (picked != null) {
+      setState(() => isUploading = true);
+      String? url;
+      if (kIsWeb) {
+        final bytes = await picked.readAsBytes();
+        url = await CloudinaryHelper.uploadImage(bytes);
+      } else {
+        url = await CloudinaryHelper.uploadImage(File(picked.path));
+      }
+      if (url != null) {
+        setState(() {
+          imageUrls.add(url!);
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Falha ao enviar imagem.'))
+        );
+      }
+      setState(() => isUploading = false);
+    }
+  }
+
+  void _removeImage(int index) {
+    setState(() {
+      imageUrls.removeAt(index);
+    });
   }
 
   @override
@@ -85,7 +124,7 @@ class _CreateAdsPageState extends ConsumerState<CreateAdsPage> {
         color: const Color(0xFFF5F5FF),
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          child: Form( // Adicione o Form aqui
+          child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,24 +144,56 @@ class _CreateAdsPageState extends ConsumerState<CreateAdsPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                GestureDetector(
-                  onTap: () {
-                    // Ação futura: selecionar imagem
-                  },
-                  child: Container(
-                    height: 150,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.deepPurple),
-                      borderRadius: BorderRadius.circular(8.0),
-                      color: const Color(0xFFEDE7F6),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'Clique para adicionar uma imagem',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
+                SizedBox(
+                  height: 120,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: imageUrls.length + 1,
+                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                    itemBuilder: (context, index) {
+                      if (index < imageUrls.length) {
+                        return Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: CachedNetworkImage(
+                                imageUrl: imageUrls[index],
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: () => _removeImage(index),
+                                child: Container(
+                                  color: Colors.black54,
+                                  child: const Icon(Icons.close, color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      } else {
+                        return GestureDetector(
+                          onTap: isUploading ? null : _pickAndUploadImage,
+                          child: Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.deepPurple),
+                              borderRadius: BorderRadius.circular(8.0),
+                              color: const Color(0xFFEDE7F6),
+                            ),
+                            child: isUploading
+                                ? const Center(child: CircularProgressIndicator())
+                                : const Icon(Icons.add_a_photo, color: Colors.deepPurple),
+                          ),
+                        );
+                      }
+                    },
                   ),
                 ),
                 const SizedBox(height: 16),
