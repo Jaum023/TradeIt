@@ -2,7 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tradeit_app/shared/widgets/custom_bottom_app_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tradeit_app/src/features/auth/domain/entities/app_user.dart';
 import 'package:tradeit_app/src/features/product_detail/presentation/pages/product_detail.dart';
+import 'package:tradeit_app/shared/globalUser.dart';
 
 
 class ListingPage extends StatefulWidget {
@@ -99,7 +101,7 @@ class _ListingPageState extends State<ListingPage> {
           return ListView.builder(itemCount: firebaseData.length, itemBuilder: (context, index){
             var ad = firebaseData[index];
             final data = ad.data() as Map<String, dynamic>?;
-
+            // final userName = getUser(data?['ownerId']) as Map<String, dynamic>;
             return Container(
               margin: EdgeInsets.all(15),
               decoration: BoxDecoration(

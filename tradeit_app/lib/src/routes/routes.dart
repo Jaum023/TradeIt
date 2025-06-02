@@ -26,20 +26,20 @@ final routes = <String, WidgetBuilder>{
   '/chat_teste': (context) => ChatPage(
     proposta: 'Trocar tênis por livro - 01/05',
     usuario: 'João da Feira',
-    mensagensIniciais: [
-      domain.ChatMessage(
-        text: 'Olá! Esse tênis ainda está disponível?',
-        isMe: true,
-        time: 'ONTEM',
-        sender: 'Você',
-      ),
-      domain.ChatMessage(
-        text: 'Sim, está sim!',
-        isMe: false,
-        time: 'ONTEM',
-        sender: 'João da Feira',
-      ),
-    ],
-  ),
+  //    mensagensIniciais: [
+  //      domain.ChatMessage(
+  //        text: 'Olá! Esse tênis ainda está disponível?',
+  //        isMe: true,
+  //        time: 'ONTEM',
+  //        sender: 'Você',
+  //      ),
+  //      domain.ChatMessage(
+  //        text: 'Sim, está sim!',
+  //        isMe: false,
+  //        time: 'ONTEM',
+  //        sender: 'João da Feira',
+  //      ),
+  //    ],
+   ),
   '/inbox': (context) => InboxPage(),
 };
