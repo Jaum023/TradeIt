@@ -96,7 +96,7 @@ class ProductDetail extends StatelessWidget {
                       Divider(),
 
                       // Criador
-                      Text('Criado por:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text('Criado por:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                       SizedBox(height: 4),
                       Text(
                         data['userName'] ?? 'Criador do anúncio não encontrado',
@@ -107,7 +107,7 @@ class ProductDetail extends StatelessWidget {
                       Divider(),
 
                       // Descrição
-                      Text('Descrição:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text('Descrição:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                       SizedBox(height: 4),
                       Text(
                         data['description'] ?? 'Descrição não disponível',
@@ -118,7 +118,7 @@ class ProductDetail extends StatelessWidget {
                       Divider(),
 
                       // Categoria
-                      Text('Categoria:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text('Categoria:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                       SizedBox(height: 4),
                       Text(
                         data['category'] ?? 'Categoria não disponível',
@@ -129,7 +129,7 @@ class ProductDetail extends StatelessWidget {
                       Divider(),
 
                       // Data de criação
-                      Text('Criado em:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text('Criado em:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                       SizedBox(height: 4),
                       Text(
                         formattedDate,
