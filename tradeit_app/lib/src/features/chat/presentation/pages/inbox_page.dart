@@ -30,6 +30,12 @@ class InboxPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< Updated upstream
+=======
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final currentUid = currentUser?.uid;
+
+>>>>>>> Stashed changes
     return Scaffold(
       backgroundColor: const Color(0xFF1B202D),
       appBar: AppBar(
@@ -37,6 +43,7 @@ class InboxPage extends StatelessWidget {
         backgroundColor: const Color(0xFF1B202D),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
+<<<<<<< Updated upstream
       body: ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemCount: propostas.length,
@@ -59,6 +66,67 @@ class InboxPage extends StatelessWidget {
                     ],
                   ),
                 ),
+=======
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('inbox')
+            .where('usuarios', arrayContains: currentUid)
+            .orderBy('timestamp', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final propostas = snapshot.data!.docs;
+          if (propostas.isEmpty) {
+            return const Center(
+              child: Text('Nenhuma conversa ainda.',
+                  style: TextStyle(color: Colors.white)),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: propostas.length,
+            itemBuilder: (context, index) {
+              final propostaData =
+                  propostas[index].data() as Map<String, dynamic>;
+              final nomes = propostaData['nomes'] as List<dynamic>;
+              final uids = propostaData['usuarios'] as List<dynamic>;
+
+              final otherUserName = nomes.firstWhere(
+                (n) => n != currentUser?.displayName,
+                orElse: () => 'Outro usuário',
+              );
+
+              final otherUserUid = uids.firstWhere(
+                (uid) => uid != currentUid,
+                orElse: () => '',
+              );
+
+              return _buildProposta(
+                titulo: propostaData['proposta'] ?? '',
+                ultimaMensagem: propostaData['ultimaMensagem'] ?? '',
+                hora: propostaData['timestamp'] != null &&
+                        propostaData['timestamp'] is Timestamp
+                    ? DateFormat('HH:mm').format(
+                        (propostaData['timestamp'] as Timestamp).toDate())
+                    : '',
+                usuario: otherUserName,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatPage(
+                        proposta: propostaData['proposta'],
+                        otherUserUid: otherUserUid,
+                        otherUserName: otherUserName,
+                      ),
+                    ),
+                  );
+                },
+>>>>>>> Stashed changes
               );
             },
           );
@@ -108,6 +176,7 @@ class InboxPage extends StatelessWidget {
     );
   }
 }
+<<<<<<< Updated upstream
 
 class ChatMessage {
   final String text;
@@ -122,3 +191,5 @@ class ChatMessage {
     required this.sender,
   });
 }
+=======
+>>>>>>> Stashed changes

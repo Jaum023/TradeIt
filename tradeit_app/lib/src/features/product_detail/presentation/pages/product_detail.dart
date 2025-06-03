@@ -90,6 +90,7 @@ class ProductDetail extends StatelessWidget {
               ),
 >>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
             // Botão para propor troca
             Center(
               child: ElevatedButton.icon(
@@ -98,6 +99,104 @@ class ProductDetail extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+=======
+                      // Título
+                      Text(
+                        data['title'] ?? 'Título não disponível',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+
+                      SizedBox(height: 8),
+
+
+                      SizedBox(height: 16),
+                      Divider(),
+
+                      // Criador
+                      Text('Criado por:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      SizedBox(height: 4),
+                      Text(
+                        data['userName'] ?? 'Criador do anúncio não encontrado',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(height: 3),
+                      Text(
+                        "localizacao teste: cidade X, estado",
+                        style: TextStyle(fontSize: 16),
+                      ),
+
+                      SizedBox(height: 16),
+                      Divider(),
+
+                      // Descrição
+                      Text('Descrição:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      SizedBox(height: 4),
+                      Text(
+                        data['description'] ?? 'Descrição não disponível',
+                        style: TextStyle(fontSize: 16),
+                      ),
+
+                      SizedBox(height: 16),
+                      Divider(),
+
+                      // Categoria
+                      Text('Categoria:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      SizedBox(height: 4),
+                      Text(
+                        data['category'] ?? 'Categoria não disponível',
+                        style: TextStyle(fontSize: 16),
+                      ),
+
+                      SizedBox(height: 16),
+                      Divider(),
+
+                      // Data de criação
+                      Text('Criado em:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      SizedBox(height: 4),
+                      Text(
+                        formattedDate,
+                        style: TextStyle(fontSize: 16),
+                      ),
+
+                      SizedBox(height: 30),
+
+                      // Botão de ação
+                      Center(
+                        child: ElevatedButton.icon(
+                          icon: Icon(isOwner ? Icons.edit : Icons.swap_horiz),
+                          label: Text(isOwner ? "Editar Anúncio" : "Propor Troca"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isOwner ? Colors.orange : Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                          ),
+                          onPressed: () {
+                            if (isOwner) {
+                              Navigator.pushNamed(
+                                context,
+                                '/edit',
+                                arguments: {'dataProduct': data, 'adId': adId},
+                              );
+                            } else {
+                            Navigator.pushNamed(
+                                context,
+                                '/chat',
+                                arguments: {
+                                  'proposta': adId ?? '',
+                                  'otherUserUid': data['ownerId'] ?? '',
+                                  'otherUserName': data['userName'] ?? '',
+                                },
+                              );
+                            }
+                          },
+                        ),
+                      ),
+
+                    ],
+                  ),
+>>>>>>> Stashed changes
                 ),
                 onPressed: () {
                   Navigator.pushNamed(context, '/chat_teste');

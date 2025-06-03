@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:tradeit_app/src/features/auth/presentation/pages/login_page.dart';
 import 'package:tradeit_app/src/features/auth/presentation/pages/register_page.dart';
+import 'package:tradeit_app/src/features/chat/presentation/pages/chat_page.dart';
 import 'package:tradeit_app/src/features/home/presentation/pages/listing_page.dart';
 import 'package:tradeit_app/src/features/product_detail/presentation/pages/product_detail.dart';
 import 'package:tradeit_app/src/features/ads/presentation/pages/create_ads_page.dart';
-import 'package:tradeit_app/src/features/chat/presentation/pages/chat_page.dart';
 import 'package:tradeit_app/src/features/chat/presentation/pages/inbox_page.dart';
+<<<<<<< Updated upstream
 import 'package:tradeit_app/src/features/chat/domain/entities/chat_message.dart' as domain;
+=======
+import 'package:tradeit_app/src/features/ads/presentation/pages/edit_ads_page.dart';
+>>>>>>> Stashed changes
 import 'package:tradeit_app/src/features/profile/profile_page.dart';
 
-final routes = <String, WidgetBuilder>{
+final Map<String, WidgetBuilder> routes = {
   '/login': (context) => LoginPage(),
   '/register': (context) => RegisterPage(),
   '/home': (context) => ListingPage(),
   '/create': (context) => CreateAdsPage(),
+<<<<<<< Updated upstream
   '/details': (context) => ProductDetail(),
   '/profile': (context) => ProfilePage(),
   '/chat_teste': (context) => ChatPage(
@@ -34,5 +39,16 @@ final routes = <String, WidgetBuilder>{
       ),
     ],
   ),
+=======
+  '/edit': (context) => const EditAdsPage(
+        title: '',
+        description: '',
+        condition: '',
+        categories: '',
+      ),
+  '/details': (context) => ProductDetail(),
+  '/profile': (context) => ProfilePage(),
+>>>>>>> Stashed changes
   '/inbox': (context) => InboxPage(),
+ 
 };
