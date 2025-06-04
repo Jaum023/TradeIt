@@ -182,7 +182,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    "Localização: (exemplo)",
+                                    data['location'] ?? 'Localização não disponível',
                                     style: TextStyle(
                                       color: Colors.grey[600],
                                       fontSize: 14,

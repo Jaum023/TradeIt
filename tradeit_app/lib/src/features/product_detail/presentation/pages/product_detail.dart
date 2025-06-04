@@ -102,11 +102,6 @@ class ProductDetail extends StatelessWidget {
                         data['userName'] ?? 'Criador do anúncio não encontrado',
                         style: TextStyle(fontSize: 16),
                       ),
-                      SizedBox(height: 3),
-                      Text(
-                        "localizacao teste: cidade X, estado",
-                        style: TextStyle(fontSize: 16),
-                      ),
 
                       SizedBox(height: 16),
                       Divider(),
@@ -138,6 +133,17 @@ class ProductDetail extends StatelessWidget {
                       SizedBox(height: 4),
                       Text(
                         formattedDate,
+                        style: TextStyle(fontSize: 16),
+                      ),
+
+                      SizedBox(height: 16),
+                      Divider(),
+
+                      // Localização
+                      Text('Localização:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      SizedBox(height: 4),
+                      Text(
+                        data['location'] ?? 'Localização não disponível',
                         style: TextStyle(fontSize: 16),
                       ),
 
