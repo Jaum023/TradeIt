@@ -274,8 +274,8 @@ class _ListingPageState extends State<ListingPage> {
                                     style: TextStyle(color: Colors.grey[700]),
                                   ),
                                   const SizedBox(height: 8),
-                                  const Text(
-                                    "Localização: (exemplo)",
+                                  Text(
+                                    "Localização: ${data?['location'] ?? 'Não informada'}",
                                     style: TextStyle(color: Colors.grey),
                                   ),
                                   Text(

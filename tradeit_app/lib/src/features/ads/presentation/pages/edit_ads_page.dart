@@ -7,6 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:tradeit_app/shared/cloudinary_helper.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 class EditAdsPage extends StatefulWidget {
   const EditAdsPage({Key? key, required String condition, required String description, required String title, required String categories}) : super(key: key);
@@ -18,6 +20,7 @@ class EditAdsPage extends StatefulWidget {
 class _EditAdsPageState extends State<EditAdsPage> {
   late TextEditingController titleController;
   late TextEditingController descriptionController;
+  late TextEditingController locationController;
   String? selectedCondition;
   String? selectedCategory;
   List<String> imageUrls = [];
@@ -49,12 +52,14 @@ class _EditAdsPageState extends State<EditAdsPage> {
     selectedCondition = data['condition'];
     selectedCategory = data['category'];
     imageUrls = List<String>.from(data['imageUrls'] ?? []);
+    locationController = TextEditingController(text: data['location'] ?? '');
   }
 
   @override
   void dispose() {
     titleController.dispose();
     descriptionController.dispose();
+    locationController.dispose();
     super.dispose();
   }
 
@@ -108,6 +113,7 @@ class _EditAdsPageState extends State<EditAdsPage> {
       condition: selectedCondition ?? 'Novo',
       imageUrl: imageUrls.isNotEmpty ? imageUrls.first : null,
       imageUrls: imageUrls,
+      location: locationController.text.trim(),
     );
 
     Navigator.of(context).pop();
@@ -222,6 +228,71 @@ class _EditAdsPageState extends State<EditAdsPage> {
                     borderSide: const BorderSide(color: Colors.deepPurple),
                   ),
                 ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: locationController,
+                decoration: InputDecoration(
+                  labelText: 'Localização',
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.my_location),
+                    onPressed: () async {
+                      try {
+                        bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+                        if (!serviceEnabled) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Ative a localização no dispositivo.')),
+                          );
+                          return;
+                        }
+                        LocationPermission permission = await Geolocator.checkPermission();
+                        if (permission == LocationPermission.denied) {
+                          permission = await Geolocator.requestPermission();
+                          if (permission == LocationPermission.denied) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Permissão de localização negada.')),
+                            );
+                            return;
+                          }
+                        }
+                        if (permission == LocationPermission.deniedForever) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Permissão de localização permanentemente negada. Vá nas configurações do aparelho para liberar.')),
+                          );
+                          return;
+                        }
+
+                        Position pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+                        if (kIsWeb) {
+                          locationController.text = "Lat: ${pos.latitude.toStringAsFixed(5)}, Lon: ${pos.longitude.toStringAsFixed(5)}";
+                        } else {
+                          List<Placemark> placemarks = await placemarkFromCoordinates(pos.latitude, pos.longitude);
+                          if (placemarks.isNotEmpty) {
+                            final place = placemarks.first;
+                            final cidade = (place.locality != null && place.locality!.isNotEmpty)
+                                ? place.locality
+                                : (place.subAdministrativeArea ?? '');
+                            final estado = place.administrativeArea ?? '';
+                            locationController.text = "$cidade, $estado";
+                          } else {
+                            locationController.text = "Lat: ${pos.latitude.toStringAsFixed(5)}, Lon: ${pos.longitude.toStringAsFixed(5)}";
+                          }
+                        }
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Erro ao obter localização: $e')),
+                        );
+                      }
+                    },
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Localização obrigatória';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(

@@ -19,6 +19,7 @@ class CreateAd {
       ownerId: ad.ownerId,
       createdAt: ad.createdAt,
       userName: ad.userName,
+      location: ad.location, 
     );
 
     return repository.createAd(adWithLowercase);
