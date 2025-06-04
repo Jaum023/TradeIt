@@ -28,9 +28,11 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         .doc(widget.adId);
 
     final doc = await ref.get();
-    setState(() {
-      isFavorited = doc.exists;
-    });
+    if (mounted) {
+      setState(() {
+        isFavorited = doc.exists;
+      });
+    }
   }
 
   Future<void> _toggleFavorite() async {
@@ -47,9 +49,11 @@ class _FavoriteButtonState extends State<FavoriteButton> {
       await ref.set({'timestamp': FieldValue.serverTimestamp()});
     }
 
-    setState(() {
-      isFavorited = !isFavorited;
-    });
+    if (mounted) {
+      setState(() {
+        isFavorited = !isFavorited;
+      });
+    }
   }
 
   @override

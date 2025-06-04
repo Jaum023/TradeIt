@@ -51,7 +51,6 @@ class AuthController {
       id: uid,
       name: data['name'] ?? '',
       email: data['email'] ?? '',
-      // demais campos se houver
     );
   }
 
