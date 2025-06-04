@@ -24,15 +24,16 @@ class ProductDetail extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text("Detalhes do Produto")),
       body: FutureBuilder<DocumentSnapshot>(
-        future:
-            FirebaseFirestore.instance.collection('ads').doc(adId).get(),
+        future: FirebaseFirestore.instance.collection('ads').doc(adId).get(),
         builder: (context, snapshot) {
           if (controller.isLoading.value) {
             return Center(child: CircularProgressIndicator());
           }
 
           if (controller.errorMessage.isNotEmpty) {
-            return Center(child: Text("Erro: ${controller.errorMessage.value}"));
+            return Center(
+              child: Text("Erro: ${controller.errorMessage.value}"),
+            );
           }
 
           final data = controller.adData.value;
@@ -43,17 +44,19 @@ class ProductDetail extends StatelessWidget {
 
           final createdAt = data['createdAt'];
           final date = DateTime.tryParse(createdAt ?? '');
-          final formattedDate = date != null
-              ? DateFormat('dd/MM/yyyy').format(date)
-              : 'Data inválida';
+          final formattedDate =
+              date != null
+                  ? DateFormat('dd/MM/yyyy').format(date)
+                  : 'Data inválida';
 
-          final List<String> images = List<String>.from(data['imageUrls'] ?? []);
+          final List<String> images = List<String>.from(
+            data['imageUrls'] ?? [],
+          );
 
           return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 // Imagem do produto
                 if (images.isNotEmpty)
                   SizedBox(
@@ -61,10 +64,9 @@ class ProductDetail extends StatelessWidget {
                     width: double.infinity,
                     child: PageView.builder(
                       itemCount: images.length,
-                      itemBuilder: (context, idx) => Image.network(
-                        images[idx],
-                        fit: BoxFit.cover,
-                      ),
+                      itemBuilder:
+                          (context, idx) =>
+                              Image.network(images[idx], fit: BoxFit.cover),
                     ),
                   )
                 else
@@ -82,7 +84,6 @@ class ProductDetail extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
                       // Título
                       Text(
                         data['title'] ?? 'Título não disponível',
@@ -91,12 +92,17 @@ class ProductDetail extends StatelessWidget {
 
                       SizedBox(height: 8),
 
-
                       SizedBox(height: 16),
                       Divider(),
 
                       // Criador
-                      Text('Criado por:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      Text(
+                        'Criado por:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
                       SizedBox(height: 4),
                       Text(
                         data['userName'] ?? 'Criador do anúncio não encontrado',
@@ -107,7 +113,13 @@ class ProductDetail extends StatelessWidget {
                       Divider(),
 
                       // Descrição
-                      Text('Descrição:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      Text(
+                        'Descrição:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
                       SizedBox(height: 4),
                       Text(
                         data['description'] ?? 'Descrição não disponível',
@@ -118,7 +130,13 @@ class ProductDetail extends StatelessWidget {
                       Divider(),
 
                       // Categoria
-                      Text('Categoria:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      Text(
+                        'Categoria:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
                       SizedBox(height: 4),
                       Text(
                         data['category'] ?? 'Categoria não disponível',
@@ -129,18 +147,27 @@ class ProductDetail extends StatelessWidget {
                       Divider(),
 
                       // Data de criação
-                      Text('Criado em:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                      SizedBox(height: 4),
                       Text(
-                        formattedDate,
-                        style: TextStyle(fontSize: 16),
+                        'Criado em:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                       ),
+                      SizedBox(height: 4),
+                      Text(formattedDate, style: TextStyle(fontSize: 16)),
 
                       SizedBox(height: 16),
                       Divider(),
 
                       // Localização
-                      Text('Localização:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      Text(
+                        'Localização:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
                       SizedBox(height: 4),
                       Text(
                         data['location'] ?? 'Localização não disponível',
@@ -153,13 +180,19 @@ class ProductDetail extends StatelessWidget {
                       Center(
                         child: ElevatedButton.icon(
                           icon: Icon(isOwner ? Icons.edit : Icons.swap_horiz),
-                          label: Text(isOwner ? "Editar Anúncio" : "Propor Troca"),
+                          label: Text(
+                            isOwner ? "Editar Anúncio" : "Propor Troca",
+                          ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: isOwner ? Colors.orange : Colors.blue,
+                            backgroundColor:
+                                isOwner ? Colors.orange : Colors.blue,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            padding: EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 32,
+                              vertical: 14,
+                            ),
                           ),
                           onPressed: () {
                             if (isOwner) {
@@ -171,14 +204,23 @@ class ProductDetail extends StatelessWidget {
                             } else {
                               Navigator.pushNamed(
                                 context,
-                                '/chat_teste',
-                                arguments: data,
+                                '/chat',
+                                arguments: {
+                                  'chatId':
+                                      '${currentUser?.id}_${data['ownerId']}', // Geração simples do ID do chat
+                                  'otherUserId':
+                                      data['ownerId'], // Já existe desde a criação
+                                  'otherUserName':
+                                      data['userName'], // Já existe
+                                  'proposta':
+                                      'Interesse no item: ${data['title']}', // Mensagem padrão
+                                  'relatedAdId': adId, // Vincula ao anúncio
+                                },
                               );
                             }
                           },
                         ),
                       ),
-
                     ],
                   ),
                 ),

@@ -5,9 +5,13 @@ import 'package:intl/intl.dart';
 
 class ChatPage extends StatefulWidget {
   final String proposta;
-  final String usuario; // Nome do outro usuário
+  final String outroUsuarioUid;
 
-  const ChatPage({super.key, required this.proposta, required this.usuario});
+  const ChatPage({
+    super.key,
+    required this.proposta,
+    required this.outroUsuarioUid,
+  });
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -17,6 +21,13 @@ class _ChatPageState extends State<ChatPage> {
   final _auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
   final _messageController = TextEditingController();
+  late final String _chatId;
+
+  @override
+  void initState() {
+    super.initState();
+    _chatId = _gerarChatId(_auth.currentUser!.uid, widget.outroUsuarioUid);
+  }
 
   @override
   void dispose() {
@@ -24,154 +35,133 @@ class _ChatPageState extends State<ChatPage> {
     super.dispose();
   }
 
-  Future<void> sendMessage() async {
-    final text = _messageController.text.trim();
-    if (text.isEmpty) return;
+  Future<void> _enviarMensagem() async {
+    if (_messageController.text.isEmpty) return;
 
     try {
-      // Salva a mensagem
-      await _db.collection('messages').add({
-        'message': text,
-        'user_name': _auth.currentUser?.displayName ?? 'Usuário',
-        'uid': _auth.currentUser!.uid,
-        'timestamp': FieldValue.serverTimestamp(),
-        'proposta': widget.proposta,
-        'usuarios': [
-          _auth.currentUser!.uid,
-          widget.usuario, // Aqui pode ser o UID do outro usuário se você tiver, ajuste conforme seu modelo!
-        ],
-        'nomes': [
-          _auth.currentUser?.displayName ?? 'Você',
-          widget.usuario,
-        ],
-      });
+      // Adiciona um pequeno delay para evitar timestamp nulo
+      await Future.delayed(const Duration(milliseconds: 500));
 
-      // Atualiza/Cria resumo na inbox
-      final inboxId = _getInboxId(_auth.currentUser!.uid, widget.usuario);
-      await _db.collection('inbox').doc(inboxId).set({
-        'proposta': widget.proposta,
-        'usuarios': [
-          _auth.currentUser!.uid,
-          widget.usuario,
-        ],
-        'nomes': [
-          _auth.currentUser?.displayName ?? 'Você',
-          widget.usuario,
-        ],
-        'ultimaMensagem': text,
+      await _db.collection('mensagens').add({
+        'texto': _messageController.text,
+        'de': _auth.currentUser!.uid,
+        'para': widget.outroUsuarioUid,
         'timestamp': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+        'chatId': _chatId,
+        'proposta': widget.proposta,
+      });
 
       _messageController.clear();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao enviar mensagem: $e')),
+        SnackBar(content: Text('Erro ao enviar: ${e.toString()}')),
       );
     }
   }
 
-  // Gera um ID único para a conversa entre dois usuários
-  String _getInboxId(String uid1, String uid2) {
-    final uids = [uid1, uid2]..sort();
-    return uids.join('_');
+  String _gerarChatId(String uid1, String uid2) {
+    final ids = [uid1, uid2]..sort();
+    return ids.join('_');
   }
 
   @override
   Widget build(BuildContext context) {
-    final currentUid = _auth.currentUser?.uid;
+    final meuUid = _auth.currentUser?.uid;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat - ${widget.usuario}'),
+        title: Text('Chat: ${widget.proposta}'),
+        backgroundColor: Colors.blue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline, color: Colors.white),
+            onPressed: () {
+              // Adicione ação adicional se necessário
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: _db
-                  .collection('messages')
-                  .where('proposta', isEqualTo: widget.proposta)
-                  .orderBy('timestamp', descending: false)
-                  .snapshots(),
+              stream:
+                  _db
+                      .collection('mensagens')
+                      .where('chatId', isEqualTo: _chatId)
+                      .orderBy('timestamp', descending: false)
+                      .snapshots(),
               builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Erro ao carregar mensagens: ${snapshot.error}'),
-                  );
-                }
-
-                if (!snapshot.hasData) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final docs = snapshot.data!.docs;
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      'Erro ao carregar mensagens\n${snapshot.error}',
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                }
 
-                if (docs.isEmpty) {
-                  return const Center(child: Text('Nenhuma mensagem ainda.'));
+                final messages = snapshot.data?.docs ?? [];
+                if (messages.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'Nenhuma mensagem ainda.\nEnvie a primeira mensagem!',
+                      textAlign: TextAlign.center,
+                    ),
+                  );
                 }
 
                 return ListView.builder(
                   padding: const EdgeInsets.all(16),
-                  itemCount: docs.length,
+                  itemCount: messages.length,
                   itemBuilder: (context, index) {
-                    final data = docs[index].data() as Map<String, dynamic>;
-                    final isCurrentUser = data['uid'] == currentUid;
-                    String timestampString = 'Enviando...';
-                    final timestamp = data['timestamp'];
-                    if (timestamp is Timestamp) {
-                      try {
-                        timestampString = DateFormat('dd/MM/yyyy HH:mm').format(timestamp.toDate());
-                      } catch (_) {
-                        timestampString = 'Enviando...';
-                      }
-                    }
+                    final msg = messages[index];
+                    final isEu = msg['de'] == meuUid;
+                    final timestamp = msg['timestamp'] as Timestamp?;
 
                     return Align(
-                      alignment: isCurrentUser
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
+                      alignment:
+                          isEu ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 6),
+                        margin: const EdgeInsets.symmetric(vertical: 4),
                         padding: const EdgeInsets.all(12),
-                        constraints: const BoxConstraints(maxWidth: 300),
                         decoration: BoxDecoration(
-                          color: isCurrentUser
-                              ? Colors.blue[200]
-                              : Colors.grey[300],
-                          borderRadius: BorderRadius.only(
-                            topLeft: const Radius.circular(12),
-                            topRight: const Radius.circular(12),
-                            bottomLeft: Radius.circular(isCurrentUser ? 12 : 0),
-                            bottomRight: Radius.circular(isCurrentUser ? 0 : 12),
-                          ),
+                          color: isEu ? Colors.blue[100] : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              data['message'] ?? '',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              timestampString,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.black54,
+                            Text(msg['texto']),
+                            if (timestamp != null) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                _formatarData(timestamp),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.grey[600],
+                                ),
                               ),
-                            ),
+                            ],
                           ],
                         ),
                       ),
                     );
-                  }
+                  },
                 );
               },
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            color: Colors.white,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
                 Expanded(
@@ -180,25 +170,22 @@ class _ChatPageState extends State<ChatPage> {
                     decoration: InputDecoration(
                       hintText: 'Digite sua mensagem...',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      filled: true,
-                      fillColor: Colors.grey[100],
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
                       ),
                     ),
-                    onSubmitted: (_) => sendMessage(),
+                    onSubmitted: (_) => _enviarMensagem(),
                   ),
                 ),
                 const SizedBox(width: 8),
                 CircleAvatar(
-                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: Colors.blue,
                   child: IconButton(
                     icon: const Icon(Icons.send, color: Colors.white),
-                    onPressed: sendMessage,
+                    onPressed: _enviarMensagem,
                   ),
                 ),
               ],
@@ -207,5 +194,10 @@ class _ChatPageState extends State<ChatPage> {
         ],
       ),
     );
+  }
+
+  String _formatarData(Timestamp timestamp) {
+    final date = timestamp.toDate();
+    return DateFormat('HH:mm - dd/MM').format(date);
   }
 }
