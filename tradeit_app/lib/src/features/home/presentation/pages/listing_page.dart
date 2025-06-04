@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tradeit_app/shared/widgets/custom_bottom_app_bar.dart';
 import 'package:tradeit_app/shared/globalUser.dart';
 import 'package:intl/intl.dart';
+import 'package:tradeit_app/src/features/favorites/presentation/widgets/favorite_button.dart';
 
 class ListingPage extends StatefulWidget {
   @override
@@ -283,25 +284,7 @@ class _ListingPageState extends State<ListingPage> {
                                   ),
                                   Align(
                                     alignment: Alignment.bottomRight,
-                                    child: StatefulBuilder(
-                                      builder: (context, setFavState) {
-                                        bool isFavorited = false;
-                                        return IconButton(
-                                          icon: Icon(
-                                            Icons.favorite,
-                                            color:
-                                                isFavorited
-                                                    ? Colors.red
-                                                    : Colors.grey,
-                                          ),
-                                          onPressed: () {
-                                            setFavState(() {
-                                              isFavorited = !isFavorited;
-                                            });
-                                          },
-                                        );
-                                      },
-                                    ),
+                                    child: FavoriteButton(adId: ad.id),
                                   ),
                                 ],
                               ),

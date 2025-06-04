@@ -9,6 +9,7 @@ import 'package:tradeit_app/src/features/chat/presentation/pages/inbox_page.dart
 import 'package:tradeit_app/src/features/chat/domain/entities/chat_message.dart' as domain;
 import 'package:tradeit_app/src/features/ads/presentation/pages/edit_ads_page.dart';
 import 'package:tradeit_app/src/features/profile/profile_page.dart';
+import 'package:tradeit_app/src/features/favorites/presentation/pages/favorites_page.dart';
 
 final routes = <String, WidgetBuilder>{
   '/login': (context) => LoginPage(),
@@ -42,4 +43,5 @@ final routes = <String, WidgetBuilder>{
   //    ],
    ),
   '/inbox': (context) => InboxPage(),
+  '/favorites': (context) => FavoritesPage(),
 };
