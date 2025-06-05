@@ -15,6 +15,42 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
+void deleteAds(BuildContext context, String adId) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Confirmar exclusão'),
+      content: const Text('Tem certeza que deseja excluir este anúncio?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(), 
+          child: const Text('Cancelar', style: TextStyle(color: Colors.cyan),),
+        ),
+        TextButton(
+          onPressed: () async {
+            Navigator.of(context).pop(); 
+            try {
+              await FirebaseFirestore.instance
+                  .collection('ads')
+                  .doc(adId)
+                  .delete();
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Anúncio deletado com sucesso!')),
+              );
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Erro ao deletar: $e')),
+              );
+            }
+          },
+          child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+        ),
+      ],
+    ),
+  );
+}
+
 class _ProfilePageState extends State<ProfilePage> {
   late final AuthController authController;
   late final AuthRepositoryImpl authRepository;
@@ -182,7 +218,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    data['location'] ?? 'Localização não disponível',
+                                    data['location'] ??
+                                        'Localização não disponível',
                                     style: TextStyle(
                                       color: Colors.grey[600],
                                       fontSize: 14,
@@ -195,6 +232,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                       color: Colors.grey[700],
                                       fontSize: 13,
                                     ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                      deleteAds(context, docs[index].id);
+                                    },
                                   ),
                                 ],
                               ),
