@@ -37,7 +37,6 @@ class AdRepositoryImpl implements AdRepository {
       'imageUrl': ad.imageUrl,
       'imageUrls': ad.imageUrls, 
       'location': ad.location, 
-      //implementar updatedAt
     });
   }
 }
