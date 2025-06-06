@@ -5,7 +5,7 @@ import 'package:tradeit_app/shared/globalUser.dart';
 class FavoriteButton extends StatefulWidget {
   final String adId;
 
-  const FavoriteButton({Key? key, required this.adId}) : super(key: key);
+  const FavoriteButton({super.key, required this.adId});
 
   @override
   State<FavoriteButton> createState() => _FavoriteButtonState();

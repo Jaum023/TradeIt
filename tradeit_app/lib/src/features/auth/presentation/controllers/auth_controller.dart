@@ -51,6 +51,7 @@ class AuthController {
       id: uid,
       name: data['name'] ?? '',
       email: data['email'] ?? '',
+      photoUrl: data['photoUrl'],
     );
   }
 
@@ -113,33 +114,9 @@ Future<void> registerUser(BuildContext context) async {
   }
 
   Future<void> logoutUser(BuildContext context) async {
-    if (logoutUseCase == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logout não está disponível')),
-      );
-      return;
-    }
-
-    try {
-      await logoutUseCase!;
-      // Verificação do usuário atual no FirebaseAuth após logout
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Logout realizado com sucesso!')),
-        );
-        Navigator.pushReplacementNamed(context, '/login');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Erro ao fazer logout: usuário ainda autenticado')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao fazer logout: $e')),
-      );
-    }
-  }
+  await FirebaseAuth.instance.signOut();
+  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+}
 
   Future<void> signInWithGoogle(BuildContext context) async {
     if (loginWithGoogle == null) {

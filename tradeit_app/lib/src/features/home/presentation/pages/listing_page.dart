@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:tradeit_app/src/features/favorites/presentation/widgets/favorite_button.dart';
 
 class ListingPage extends StatefulWidget {
+  const ListingPage({super.key});
+
   @override
   _ListingPageState createState() => _ListingPageState();
 }
@@ -39,7 +41,7 @@ class _ListingPageState extends State<ListingPage> {
     if (query.isNotEmpty) {
       adsQuery = adsQuery
           .where('titleLowercase', isGreaterThanOrEqualTo: query)
-          .where('titleLowercase', isLessThanOrEqualTo: query + '\uf8ff');
+          .where('titleLowercase', isLessThanOrEqualTo: '$query\uf8ff');
     }
 
     if (selectedCategory.isNotEmpty) {
@@ -60,7 +62,7 @@ class _ListingPageState extends State<ListingPage> {
                     hintText: 'Buscar anúncio...',
                     border: InputBorder.none,
                     suffixIcon: IconButton(
-                      icon: Icon(Icons.clear, color: Colors.black),
+                      icon: const Icon(Icons.clear, color: Colors.black),
                       onPressed: () {
                         _searchController.clear();
                         setState(() {
@@ -87,7 +89,7 @@ class _ListingPageState extends State<ListingPage> {
         actions: [
           if (!_isSearching)
             IconButton(
-              icon: Icon(Icons.search, color: Colors.black),
+              icon: const Icon(Icons.search, color: Colors.black),
               onPressed: () {
                 setState(() {
                   _isSearching = true;
@@ -156,11 +158,11 @@ class _ListingPageState extends State<ListingPage> {
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 if (!snapshot.hasData || snapshot.data == null) {
-                  return Center(child: Text("Nenhum dado disponível."));
+                  return const Center(child: Text("Nenhum dado disponível."));
                 }
 
                 final firebaseData =
@@ -170,7 +172,7 @@ class _ListingPageState extends State<ListingPage> {
                     }).toList();
 
                 if (firebaseData.isEmpty) {
-                  return Center(
+                  return const Center(
                     child: Text(
                       "Nenhum anúncio disponível para os filtros aplicados.",
                     ),
@@ -216,7 +218,7 @@ class _ListingPageState extends State<ListingPage> {
                         );
                       },
                       child: Container(
-                        margin: EdgeInsets.symmetric(
+                        margin: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 8,
                         ),
@@ -229,7 +231,7 @@ class _ListingPageState extends State<ListingPage> {
                           children: [
                             // Imagem do anúncio
                             ClipRRect(
-                              borderRadius: BorderRadius.vertical(
+                              borderRadius: const BorderRadius.vertical(
                                 top: Radius.circular(12),
                               ),
                               child:
@@ -245,7 +247,7 @@ class _ListingPageState extends State<ListingPage> {
                                           width: double.infinity,
                                           height: 200,
                                           color: Colors.grey[300],
-                                          child: Icon(
+                                          child: const Icon(
                                             Icons.image_not_supported,
                                             size: 60,
                                           ),
@@ -258,7 +260,7 @@ class _ListingPageState extends State<ListingPage> {
                                 children: [
                                   Text(
                                     data?['title'] ?? '',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -276,11 +278,11 @@ class _ListingPageState extends State<ListingPage> {
                                   const SizedBox(height: 8),
                                   Text(
                                     "Localização: ${data?['location'] ?? 'Não informada'}",
-                                    style: TextStyle(color: Colors.grey),
+                                    style: const TextStyle(color: Colors.grey),
                                   ),
                                   Text(
                                     "Criado em: $formattedDate",
-                                    style: TextStyle(color: Colors.grey),
+                                    style: const TextStyle(color: Colors.grey),
                                   ),
                                   Align(
                                     alignment: Alignment.bottomRight,
@@ -300,7 +302,7 @@ class _ListingPageState extends State<ListingPage> {
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomAppBar(currentIndex: 0),
+      bottomNavigationBar: const CustomBottomAppBar(currentIndex: 0),
     );
   }
 }

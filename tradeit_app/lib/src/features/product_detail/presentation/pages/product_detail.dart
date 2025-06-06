@@ -14,17 +14,19 @@ class ProductDetail extends StatelessWidget {
 final TextEditingController _textController = TextEditingController();
   File? _imagemSelecionada;
 
+  ProductDetail({super.key});
+
   void _abrirModal(BuildContext context, String ownerId, String ownerName, controller) {
     final picker = ImagePicker();
     File? imagemSelecionada;
-    final TextEditingController _controller = TextEditingController();
+    final TextEditingController controller0 = TextEditingController();
 
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            Future<void> _selecionarImagem() async {
+            Future<void> selecionarImagem() async {
               final picked = await picker.pickImage(
                 source: ImageSource.gallery,
               );
@@ -35,13 +37,13 @@ final TextEditingController _textController = TextEditingController();
               }
             }
 
-            Future<void> _enviarProposta(String ownerId, String ownerName, controller) async {
+            Future<void> enviarProposta(String ownerId, String ownerName, controller) async {
               final uidAtual = currentUser?.id;
               final nomeAtual = currentUser?.name ?? 'Usuário';
               final outroUid = ownerId; // ID do dono do anúncio
               final outroNome = controller.adData.value['userName'] ?? 'Outro';
 
-              if (_controller.text.trim().isEmpty) return;
+              if (controller0.text.trim().isEmpty) return;
 
               String? imagemUrl;
               // if (imagemSelecionada != null) {
@@ -55,7 +57,7 @@ final TextEditingController _textController = TextEditingController();
 
               await FirebaseFirestore.instance.collection('inbox').add({
                 'proposta': currentUser!.name,
-                'ultimaMensagem': _controller.text.trim(),
+                'ultimaMensagem': controller0.text.trim(),
                 'usuarios': [currentUser!.id, ownerId],
                 'nomes': [currentUser!.name, ownerName],
                 'timestamp': Timestamp.now(),
@@ -66,21 +68,21 @@ final TextEditingController _textController = TextEditingController();
             }
 
             return AlertDialog(
-              title: Text('Oferta para Anunciante:'),
+              title: const Text('Oferta para Anunciante:'),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
-                      controller: _controller,
-                      decoration: InputDecoration(
+                      controller: controller0,
+                      decoration: const InputDecoration(
                         labelText: "Faça sua oferta!",
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: _selecionarImagem,
-                      child: Text("Selecionar Imagem"),
+                      onPressed: selecionarImagem,
+                      child: const Text("Selecionar Imagem"),
                     ),
                     if (imagemSelecionada != null)
                       Padding(
@@ -93,11 +95,11 @@ final TextEditingController _textController = TextEditingController();
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: Text('Cancelar'),
+                  child: const Text('Cancelar'),
                 ),
                 ElevatedButton(
-                  onPressed:(){ _enviarProposta(ownerId, ownerName, controller);},
-                  child: Text('Enviar'),
+                  onPressed:(){ enviarProposta(ownerId, ownerName, controller);},
+                  child: const Text('Enviar'),
                 ),
               ],
             );
@@ -116,18 +118,18 @@ final TextEditingController _textController = TextEditingController();
     final isOwner = ownerId == currentUser?.id;
 
     if (adId == null) {
-      return Scaffold(body: Center(child: Text('ID não encontrado')));
+      return const Scaffold(body: Center(child: Text('ID não encontrado')));
     }
 
     final controller = Get.put(ProductDetailController(adId), tag: adId);
 
     return Scaffold(
-      appBar: AppBar(title: Text("Detalhes do Produto")),
+      appBar: AppBar(title: const Text("Detalhes do Produto")),
       body: FutureBuilder<DocumentSnapshot>(
         future: FirebaseFirestore.instance.collection('ads').doc(adId).get(),
         builder: (context, snapshot) {
           if (controller.isLoading.value) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (controller.errorMessage.isNotEmpty) {
@@ -139,7 +141,7 @@ final TextEditingController _textController = TextEditingController();
           final data = controller.adData.value;
 
           if (data == null) {
-            return Center(child: Text('Anúncio não encontrado'));
+            return const Center(child: Text('Anúncio não encontrado'));
           }
 
           final createdAt = data['createdAt'];
@@ -174,7 +176,7 @@ final TextEditingController _textController = TextEditingController();
                     height: 250,
                     width: double.infinity,
                     color: Colors.grey[200],
-                    child: Center(
+                    child: const Center(
                       child: Icon(Icons.image, size: 80, color: Colors.grey),
                     ),
                   ),
@@ -190,91 +192,91 @@ final TextEditingController _textController = TextEditingController();
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
 
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
 
-                      SizedBox(height: 16),
-                      Divider(),
+                      const SizedBox(height: 16),
+                      const Divider(),
 
                       // Criador
-                      Text(
+                      const Text(
                         'Criado por:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         data['userName'] ?? 'Criador do anúncio não encontrado',
-                        style: TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16),
                       ),
 
-                      SizedBox(height: 16),
-                      Divider(),
+                      const SizedBox(height: 16),
+                      const Divider(),
 
                       // Descrição
-                      Text(
+                      const Text(
                         'Descrição:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         data['description'] ?? 'Descrição não disponível',
-                        style: TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16),
                       ),
 
-                      SizedBox(height: 16),
-                      Divider(),
+                      const SizedBox(height: 16),
+                      const Divider(),
 
                       // Categoria
-                      Text(
+                      const Text(
                         'Categoria:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         data['category'] ?? 'Categoria não disponível',
-                        style: TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16),
                       ),
 
-                      SizedBox(height: 16),
-                      Divider(),
+                      const SizedBox(height: 16),
+                      const Divider(),
 
                       // Data de criação
-                      Text(
+                      const Text(
                         'Criado em:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
-                      SizedBox(height: 4),
-                      Text(formattedDate, style: TextStyle(fontSize: 16)),
+                      const SizedBox(height: 4),
+                      Text(formattedDate, style: const TextStyle(fontSize: 16)),
 
-                      SizedBox(height: 16),
-                      Divider(),
+                      const SizedBox(height: 16),
+                      const Divider(),
 
                       // Localização
-                      Text(
+                      const Text(
                         'Localização:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         data['location'] ?? 'Localização não disponível',
-                        style: TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16),
                       ),
 
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
 
                       // Botão de ação
                       Center(
@@ -289,7 +291,7 @@ final TextEditingController _textController = TextEditingController();
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 32,
                               vertical: 14,
                             ),
@@ -329,7 +331,7 @@ final TextEditingController _textController = TextEditingController();
           );
         },
       ),
-      bottomNavigationBar: CustomBottomAppBar(currentIndex: 3),
+      bottomNavigationBar: const CustomBottomAppBar(currentIndex: 3),
     );
   }
 }

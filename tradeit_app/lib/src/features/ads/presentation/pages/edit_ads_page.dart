@@ -11,7 +11,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
 class EditAdsPage extends StatefulWidget {
-  const EditAdsPage({Key? key, required String condition, required String description, required String title, required String categories}) : super(key: key);
+  const EditAdsPage({super.key, required String condition, required String description, required String title, required String categories});
 
   @override
   _EditAdsPageState createState() => _EditAdsPageState();
@@ -235,13 +235,13 @@ class _EditAdsPageState extends State<EditAdsPage> {
                 decoration: InputDecoration(
                   labelText: 'Localização',
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.my_location),
+                    icon: const Icon(Icons.my_location),
                     onPressed: () async {
                       try {
                         bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
                         if (!serviceEnabled) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Ative a localização no dispositivo.')),
+                            const SnackBar(content: Text('Ative a localização no dispositivo.')),
                           );
                           return;
                         }
@@ -250,14 +250,14 @@ class _EditAdsPageState extends State<EditAdsPage> {
                           permission = await Geolocator.requestPermission();
                           if (permission == LocationPermission.denied) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Permissão de localização negada.')),
+                              const SnackBar(content: Text('Permissão de localização negada.')),
                             );
                             return;
                           }
                         }
                         if (permission == LocationPermission.deniedForever) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Permissão de localização permanentemente negada. Vá nas configurações do aparelho para liberar.')),
+                            const SnackBar(content: Text('Permissão de localização permanentemente negada. Vá nas configurações do aparelho para liberar.')),
                           );
                           return;
                         }

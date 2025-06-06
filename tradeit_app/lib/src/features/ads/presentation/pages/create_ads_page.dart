@@ -12,7 +12,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
 class CreateAdsPage extends ConsumerStatefulWidget {
-  const CreateAdsPage({Key? key}) : super(key: key);
+  const CreateAdsPage({super.key});
 
   @override
   ConsumerState<CreateAdsPage> createState() => _CreateAdsPageState();
@@ -267,7 +267,7 @@ class _CreateAdsPageState extends ConsumerState<CreateAdsPage> {
                           bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
                           if (!serviceEnabled) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Ative a localização no dispositivo.')),
+                              const SnackBar(content: Text('Ative a localização no dispositivo.')),
                             );
                             return;
                           }
@@ -276,14 +276,14 @@ class _CreateAdsPageState extends ConsumerState<CreateAdsPage> {
                             permission = await Geolocator.requestPermission();
                             if (permission == LocationPermission.denied) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Permissão de localização negada.')),
+                                const SnackBar(content: Text('Permissão de localização negada.')),
                               );
                               return;
                             }
                           }
                           if (permission == LocationPermission.deniedForever) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Permissão de localização permanentemente negada. Vá nas configurações do aparelho para liberar.')),
+                              const SnackBar(content: Text('Permissão de localização permanentemente negada. Vá nas configurações do aparelho para liberar.')),
                             );
                             return;
                           }

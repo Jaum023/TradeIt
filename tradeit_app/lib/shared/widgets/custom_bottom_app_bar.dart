@@ -5,9 +5,9 @@ class CustomBottomAppBar extends StatelessWidget {
   final int currentIndex;
 
   const CustomBottomAppBar({
-    Key? key,
+    super.key,
     required this.currentIndex,
-  }) : super(key: key);
+  });
 
 void _onItemTapped(BuildContext context, int index) async {
   switch (index) {
@@ -21,8 +21,14 @@ void _onItemTapped(BuildContext context, int index) async {
       Navigator.pushNamed(context, '/inbox');
       break;
     case 3:
-      await FirebaseAuth.instance.signOut();
-      Navigator.pushNamedAndRemoveUntil(context, '/profile', (route) => false);
+      if (FirebaseAuth.instance.currentUser != null) {
+        Navigator.pushNamed(context, '/profile');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Faça login para acessar o perfil!')),
+        );
+        Navigator.pushReplacementNamed(context, '/login');
+      }
       break;
   }
 }

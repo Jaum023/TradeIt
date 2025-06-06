@@ -39,22 +39,22 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Meus Favoritos")),
+      appBar: AppBar(title: const Text("Meus Favoritos")),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: fetchFavoriteAds(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text("Erro ao carregar favoritos."));
+            return const Center(child: Text("Erro ao carregar favoritos."));
           }
 
           final favoriteAds = snapshot.data ?? [];
 
           if (favoriteAds.isEmpty) {
-            return Center(child: Text("Nenhum favorito encontrado."));
+            return const Center(child: Text("Nenhum favorito encontrado."));
           }
 
           return ListView.builder(
@@ -73,7 +73,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   );
                 },
                 child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.grey.shade300),
@@ -82,7 +82,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.vertical(
+                        borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(12),
                         ),
                         child:
@@ -98,7 +98,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                   width: double.infinity,
                                   height: 200,
                                   color: Colors.grey[300],
-                                  child: Icon(
+                                  child: const Icon(
                                     Icons.image_not_supported,
                                     size: 60,
                                   ),
@@ -111,12 +111,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
                           children: [
                             Text(
                               data['title'] ?? '',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
                               "Localização: (exemplo)",
                               style: TextStyle(
@@ -124,7 +124,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                 fontSize: 14,
                               ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
                               "Categoria: ${data['category'] ?? ''}",
                               style: TextStyle(

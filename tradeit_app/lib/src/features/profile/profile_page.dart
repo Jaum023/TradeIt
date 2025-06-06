@@ -7,6 +7,8 @@ import 'package:tradeit_app/src/features/auth/domain/usecases/logout.dart';
 import 'package:tradeit_app/src/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:tradeit_app/src/features/auth/data/datasources/firebase_auth_datasource.dart';
 import 'package:tradeit_app/shared/globalUser.dart';
+import 'package:tradeit_app/src/features/profile/edit_profile_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -62,13 +64,14 @@ class _ProfilePageState extends State<ProfilePage> {
     authController = AuthController.logout(
       logoutUseCase: Logout(authRepository),
     );
+    print(FirebaseAuth.instance.currentUser);
   }
 
   @override
   Widget build(BuildContext context) {
     final String nome = currentUser?.name ?? 'Nome não disponível';
     final String email = currentUser?.email ?? 'Email não disponível';
-    final String? fotoUrl = null; //currentUser?.photoUrl;
+    final String? fotoUrl = currentUser?.photoUrl;
 
     return Scaffold(
       appBar: AppBar(
@@ -109,10 +112,18 @@ class _ProfilePageState extends State<ProfilePage> {
             ElevatedButton.icon(
               icon: const Icon(Icons.edit),
               label: const Text('Editar Perfil'),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Segredo dos amigos')),
+              onPressed: () async {
+                print('FirebaseAuth.currentUser antes de editar: ${FirebaseAuth.instance.currentUser}');
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditProfilePage(
+                      initialName: nome,
+                      initialEmail: email,
+                    ),
+                  ),
                 );
+                setState(() {}); 
               },
             ),
             const SizedBox(height: 8),
@@ -256,7 +267,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomAppBar(currentIndex: 3),
+      bottomNavigationBar: const CustomBottomAppBar(currentIndex: 3),
     );
   }
 }
