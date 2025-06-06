@@ -33,8 +33,8 @@ class TradeItApp extends StatelessWidget {
         fontFamily: 'Montserrat',
         useMaterial3: true,
       ),
-      initialRoute: '/login', // Ponto de entrada do app
-      routes: routes, // Todas as rotas definidas no arquivo routes.dart
+      initialRoute: '/login', // entrada do app
+      routes: routes, // rotas definidas no arquivo routes.dart
     );
   }
 }

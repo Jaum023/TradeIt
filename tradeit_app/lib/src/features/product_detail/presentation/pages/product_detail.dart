@@ -50,20 +50,13 @@ class ProductDetail extends StatelessWidget {
             ) async {
               final uidAtual = currentUser?.id;
               final nomeAtual = currentUser?.name ?? 'Usuário';
-              final outroUid = ownerId; // ID do dono do anúncio
+              final outroUid = ownerId; 
               final outroNome = controller.adData.value['userName'] ?? 'Outro';
 
               if (controller0.text.trim().isEmpty) return;
 
               String? imagemUrl;
-              // if (imagemSelecionada != null) {
-              //   final ref = FirebaseStorage.instance
-              //       .ref()
-              //       .child('propostas')
-              //       .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
-              //   await ref.putFile(imagemSelecionada!);
-              //   imagemUrl = await ref.getDownloadURL();
-              // }
+              
 
               await FirebaseFirestore.instance.collection('inbox').add({
                 'proposta': currentUser!.name,
