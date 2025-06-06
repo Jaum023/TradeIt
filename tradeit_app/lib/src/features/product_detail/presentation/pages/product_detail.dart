@@ -68,7 +68,7 @@ class ProductDetail extends StatelessWidget {
                 //'proposta': currentUser!.name,
                 //'proposta': controller.adData.value['title'] ?? 'Título não disponível',
                 'proposta': title,
-                'ultimaMensagem': controller0.text.trim(),
+                'ultimaMensagem': '${currentUser?.name ?? 'Usuário'}: ${controller0.text.trim()}',
                 'usuarios': [currentUser!.id, ownerId],
                 'nomes': [currentUser!.name, ownerName],
                 'timestamp': Timestamp.now(),
