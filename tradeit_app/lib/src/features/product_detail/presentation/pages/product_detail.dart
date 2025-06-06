@@ -320,7 +320,14 @@ final TextEditingController _textController = TextEditingController();
                             //     },
                             //   );
                             // }
-                            _abrirModal(context, ownerId!, data['userName'] ?? 'Usuário Desconhecido', controller);
+                            if (isOwner) {
+                              Navigator.pushNamed(
+                                context,
+                                '/edit',
+                                arguments: {'dataProduct': data, 'adId': adId},
+                              );}else {
+                                // Propor troca
+                            _abrirModal(context, ownerId!, data['userName'] ?? 'Usuário Desconhecido', controller);}
                           },
                         ),
                       ),

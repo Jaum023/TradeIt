@@ -26,8 +26,8 @@ class AuthController {
   AuthController.login({
     required this.loginWithEmail,
     required this.loginWithGoogle,
-  })  : registerWithEmail = null,
-        logoutUseCase = null;
+  }) : registerWithEmail = null,
+       logoutUseCase = null;
 
   // Construtor para registro
   AuthController.register({
@@ -37,11 +37,10 @@ class AuthController {
   }) : logoutUseCase = null;
 
   // Construtor para logout
-  AuthController.logout({
-    required this.logoutUseCase,
-  }) : registerWithEmail = null, 
-    loginWithEmail = null,
-    loginWithGoogle = null;
+  AuthController.logout({required this.logoutUseCase})
+    : registerWithEmail = null,
+      loginWithEmail = null,
+      loginWithGoogle = null;
 
   Future<AppUser?> loadUserProfile(String uid) async {
     final doc = await firestore.collection('users').doc(uid).get();
@@ -55,31 +54,31 @@ class AuthController {
     );
   }
 
-Future<void> registerUser(BuildContext context) async {
-  if (txtEmail.text.trim().isEmpty || txtPassword.text.trim().isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('E-mail e senha são obrigatórios')),
-    );
-    return;
-  }
-
-  try {
-    final AppUser? user = await registerWithEmail!(
-      txtEmail.text.trim(),
-      txtPassword.text.trim(),
-      txtName.text.trim(),
-    );
-
-    if (user != null) {
-      // após registrar, faça o login com email/senha
-      await login(context);
+  Future<void> registerUser(BuildContext context) async {
+    if (txtEmail.text.trim().isEmpty || txtPassword.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('E-mail e senha são obrigatórios')),
+      );
+      return;
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Erro ao registrar: $e')),
-    );
+
+    try {
+      final AppUser? user = await registerWithEmail!(
+        txtEmail.text.trim(),
+        txtPassword.text.trim(),
+        txtName.text.trim(),
+      );
+
+      if (user != null) {
+        // após registrar, faça o login com email/senha
+        await login(context);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao registrar: $e')));
+    }
   }
-}
 
   Future<void> login(BuildContext context) async {
     if (txtEmail.text.trim().isEmpty || txtPassword.text.trim().isEmpty) {
@@ -107,16 +106,21 @@ Future<void> registerUser(BuildContext context) async {
         Navigator.pushReplacementNamed(context, "/home");
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erro ao fazer login: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Erro ao fazer login: $e")));
     }
   }
 
   Future<void> logoutUser(BuildContext context) async {
-  await FirebaseAuth.instance.signOut();
-  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-}
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+    if (FirebaseAuth.instance.currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Logout realizado com sucesso!')),
+      );
+    }
+  }
 
   Future<void> signInWithGoogle(BuildContext context) async {
     if (loginWithGoogle == null) {

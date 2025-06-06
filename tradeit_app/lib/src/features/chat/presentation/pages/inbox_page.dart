@@ -29,11 +29,20 @@ class InboxPage extends StatelessWidget {
                 .orderBy('timestamp', descending: true)
                 .snapshots(),
         builder: (context, snapshot) {
+          debugPrint('Snapshot connection state: ${snapshot.connectionState}');
+          if (snapshot.hasError) {
+            debugPrint('Erro ao carregar dados: ${snapshot.error}');
+          }
           if (!snapshot.hasData) {
+            debugPrint('Snapshot ainda não tem dados.');
             return const Center(child: CircularProgressIndicator());
           }
+          debugPrint('Dados recebidos: ${snapshot.data!.docs.length}');
 
           final propostas = snapshot.data!.docs;
+          for (var proposta in propostas) {
+            debugPrint('Documento recebido: ${proposta.data()}');
+          }
           if (propostas.isEmpty) {
             return const Center(
               child: Text(
@@ -49,8 +58,14 @@ class InboxPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final propostaData =
                   propostas[index].data() as Map<String, dynamic>;
-              final nomes = propostaData['nomes'] as List<dynamic>;
-              final uids = propostaData['usuarios'] as List<dynamic>;
+              final nomes = (propostaData['nomes'] as List<dynamic>?) ?? [];
+              final uids = (propostaData['usuarios'] as List<dynamic>?) ?? [];
+              debugPrint('UID atual: $currentUid');
+
+              if (nomes.isEmpty || uids.isEmpty) {
+                debugPrint('Documento inválido: ${propostaData}');
+                return const SizedBox(); // Ignora documentos inválidos
+              }
 
               final otherUserName = nomes.firstWhere(
                 (n) => n != currentUser?.displayName,
@@ -91,7 +106,7 @@ class InboxPage extends StatelessWidget {
           );
         },
       ),
-            bottomNavigationBar: const CustomBottomAppBar(currentIndex: 2),
+      bottomNavigationBar: const CustomBottomAppBar(currentIndex: 2),
     );
   }
 
