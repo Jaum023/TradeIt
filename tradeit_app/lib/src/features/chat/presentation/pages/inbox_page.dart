@@ -67,10 +67,9 @@ class InboxPage extends StatelessWidget {
                 return const SizedBox(); // Ignora documentos inválidos
               }
 
-              final otherUserName = nomes.firstWhere(
-                (n) => n != currentUser?.displayName,
-                orElse: () => 'Outro usuário',
-              );
+              final currentUserName = currentUser?.displayName ?? '';
+              final meuIndice = nomes.indexOf(currentUserName);
+              final nomeOutroUsuario = (meuIndice == 0) ? nomes[1] : nomes[0];
 
               final otherUserUid = uids.firstWhere(
                 (uid) => uid != currentUid,
@@ -84,11 +83,13 @@ class InboxPage extends StatelessWidget {
                       )
                       : 'Agora';
 
+              final tituloConcatenado = '$nomeOutroUsuario - ${propostaData['proposta'] ?? 'Proposta sem título'}';
+
               return _buildProposta(
-                titulo: propostaData['proposta'] ?? 'Proposta sem título',
+                titulo: tituloConcatenado,
                 ultimaMensagem: propostaData['ultimaMensagem'] ?? '',
                 hora: hora,
-                usuario: otherUserName.toString(),
+                usuario: nomeOutroUsuario.toString(),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -146,7 +147,7 @@ class InboxPage extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          ultimaMensagem,
+          '$ultimaMensagem',
           style: const TextStyle(color: Colors.black54, fontSize: 14),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,

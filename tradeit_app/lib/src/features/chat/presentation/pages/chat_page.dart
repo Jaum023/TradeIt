@@ -45,11 +45,25 @@ class _ChatPageState extends State<ChatPage> {
       await _db.collection('mensagens').add({
         'texto': _messageController.text,
         'de': _auth.currentUser!.uid,
+        //'deNome': _auth.currentUser!.displayName ?? 'Usuário', N utilizei a final mas é possivel usar dps
         'para': widget.outroUsuarioUid,
         'timestamp': FieldValue.serverTimestamp(),
         'chatId': _chatId,
         'proposta': widget.proposta,
       });
+      final inboxQuery =
+          await FirebaseFirestore.instance
+              .collection('inbox')
+              .where('chatId', isEqualTo: _chatId)
+              .limit(1)
+              .get();
+
+      if (inboxQuery.docs.isNotEmpty) {
+        await inboxQuery.docs.first.reference.update({
+          'ultimaMensagem': '${_auth.currentUser!.displayName ?? 'Usuário'}: ${_messageController.text}',
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+      }
 
       _messageController.clear();
     } catch (e) {
@@ -70,7 +84,7 @@ class _ChatPageState extends State<ChatPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat: ${widget.proposta}'),
+        title: Text('${widget.proposta}'),
         backgroundColor: Colors.blue,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),

@@ -21,6 +21,7 @@ class ProductDetail extends StatelessWidget {
     BuildContext context,
     String ownerId,
     String ownerName,
+    String title,
     controller,
   ) {
     final picker = ImagePicker();
@@ -58,8 +59,15 @@ class ProductDetail extends StatelessWidget {
               String? imagemUrl;
               
 
+              final chatId = uidAtual!.compareTo(outroUid) < 0
+                  ? '${uidAtual}_$outroUid'
+                  : '${outroUid}_$uidAtual';
+
               await FirebaseFirestore.instance.collection('inbox').add({
-                'proposta': currentUser!.name,
+                'chatId': chatId,
+                //'proposta': currentUser!.name,
+                //'proposta': controller.adData.value['title'] ?? 'Título não disponível',
+                'proposta': title,
                 'ultimaMensagem': controller0.text.trim(),
                 'usuarios': [currentUser!.id, ownerId],
                 'nomes': [currentUser!.name, ownerName],
@@ -363,6 +371,7 @@ class ProductDetail extends StatelessWidget {
                                 context,
                                 ownerId!,
                                 data['userName'] ?? 'Usuário Desconhecido',
+                                data['title'] ?? 'Título não disponível',
                                 controller,
                               );
                             }
