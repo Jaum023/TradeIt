@@ -8,15 +8,21 @@ import '../../../../../shared/globalUser.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:tradeit_app/src/features/chat/presentation/pages/chat_page.dart';
+import 'package:tradeit_app/src/features/chat/domain/entities/chat_message.dart';
 
 class ProductDetail extends StatelessWidget {
-
-final TextEditingController _textController = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
   File? _imagemSelecionada;
 
   ProductDetail({super.key});
 
-  void _abrirModal(BuildContext context, String ownerId, String ownerName, controller) {
+  void _abrirModal(
+    BuildContext context,
+    String ownerId,
+    String ownerName,
+    controller,
+  ) {
     final picker = ImagePicker();
     File? imagemSelecionada;
     final TextEditingController controller0 = TextEditingController();
@@ -37,7 +43,11 @@ final TextEditingController _textController = TextEditingController();
               }
             }
 
-            Future<void> enviarProposta(String ownerId, String ownerName, controller) async {
+            Future<void> enviarProposta(
+              String ownerId,
+              String ownerName,
+              controller,
+            ) async {
               final uidAtual = currentUser?.id;
               final nomeAtual = currentUser?.name ?? 'Usuário';
               final outroUid = ownerId; // ID do dono do anúncio
@@ -65,6 +75,30 @@ final TextEditingController _textController = TextEditingController();
               });
 
               Navigator.popAndPushNamed(context, '/home');
+            }
+
+            Future<void> converterMensagem(
+              String ownerId,
+              String ownerName,
+              String textoProposta,
+            ) async {
+              final uidAtual = currentUser?.id;
+              final outroUid = ownerId;
+
+              if (uidAtual == null || textoProposta.isEmpty) return;
+
+              final chatId = uidAtual.compareTo(outroUid) < 0
+                  ? '${uidAtual}_$outroUid'
+                  : '${outroUid}_$uidAtual';
+
+              await FirebaseFirestore.instance.collection('mensagens').add({
+                'texto': textoProposta,
+                'de': uidAtual,
+                'para': outroUid,
+                'timestamp': FieldValue.serverTimestamp(),
+                'chatId': chatId,
+                'proposta': 'Interesse no item',
+              });
             }
 
             return AlertDialog(
@@ -98,7 +132,11 @@ final TextEditingController _textController = TextEditingController();
                   child: const Text('Cancelar'),
                 ),
                 ElevatedButton(
-                  onPressed:(){ enviarProposta(ownerId, ownerName, controller);},
+                  onPressed: () async {
+                    final texto = controller0.text.trim();
+                    await enviarProposta(ownerId, ownerName, controller);
+                    await converterMensagem(ownerId, ownerName, texto);
+                  },
                   child: const Text('Enviar'),
                 ),
               ],
@@ -325,9 +363,16 @@ final TextEditingController _textController = TextEditingController();
                                 context,
                                 '/edit',
                                 arguments: {'dataProduct': data, 'adId': adId},
-                              );}else {
-                                // Propor troca
-                            _abrirModal(context, ownerId!, data['userName'] ?? 'Usuário Desconhecido', controller);}
+                              );
+                            } else {
+                              // Propor troca
+                              _abrirModal(
+                                context,
+                                ownerId!,
+                                data['userName'] ?? 'Usuário Desconhecido',
+                                controller,
+                              );
+                            }
                           },
                         ),
                       ),
