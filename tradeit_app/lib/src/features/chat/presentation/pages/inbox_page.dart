@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'chat_page.dart';
+import 'package:tradeit_app/shared/widgets/custom_bottom_app_bar.dart';
 
 class InboxPage extends StatelessWidget {
   const InboxPage({super.key});
@@ -90,6 +91,7 @@ class InboxPage extends StatelessWidget {
           );
         },
       ),
+            bottomNavigationBar: const CustomBottomAppBar(currentIndex: 2),
     );
   }
 

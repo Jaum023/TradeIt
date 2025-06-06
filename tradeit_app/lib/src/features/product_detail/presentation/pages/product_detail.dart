@@ -297,29 +297,30 @@ final TextEditingController _textController = TextEditingController();
                             ),
                           ),
                           onPressed: () {
-                            if (isOwner) {
-                              Navigator.pushNamed(
-                                context,
-                                '/edit',
-                                arguments: {'dataProduct': data, 'adId': adId},
-                              );
-                            } else {
-                              Navigator.pushNamed(
-                                context,
-                                '/chat',
-                                arguments: {
-                                  'chatId':
-                                      '${currentUser?.id}_${data['ownerId']}', // Geração simples do ID do chat
-                                  'otherUserId':
-                                      data['ownerId'], // Já existe desde a criação
-                                  'otherUserName':
-                                      data['userName'], // Já existe
-                                  'proposta':
-                                      'Interesse no item: ${data['title']}', // Mensagem padrão
-                                  'relatedAdId': adId, // Vincula ao anúncio
-                                },
-                              );
-                            }
+                            // if (isOwner) {
+                            //   Navigator.pushNamed(
+                            //     context,
+                            //     '/edit',
+                            //     arguments: {'dataProduct': data, 'adId': adId},
+                            //   );
+                            // } else {
+                            //   Navigator.pushNamed(
+                            //     context,
+                            //     '/chat',
+                            //     arguments: {
+                            //       'chatId':
+                            //           '${currentUser?.id}_${data['ownerId']}', // Geração simples do ID do chat
+                            //       'otherUserId':
+                            //           data['ownerId'], // Já existe desde a criação
+                            //       'otherUserName':
+                            //           data['userName'], // Já existe
+                            //       'proposta':
+                            //           'Interesse no item: ${data['title']}', // Mensagem padrão
+                            //       'relatedAdId': adId, // Vincula ao anúncio
+                            //     },
+                            //   );
+                            // }
+                            _abrirModal(context, ownerId!, data['userName'] ?? 'Usuário Desconhecido', controller);
                           },
                         ),
                       ),
