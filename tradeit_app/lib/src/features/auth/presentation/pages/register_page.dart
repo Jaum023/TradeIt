@@ -41,99 +41,106 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: 25,),
-                  Text('Cadastro', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 25,),
-                  Text('Faça seu cadastro', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 65,),
-                  AuthTextField(
-                    controller: authController.txtName,
-                    hint: "Digite seu nome",
-                    icon: Icons.person,
-                    keyboardType: TextInputType.name,
-                    validator: (value) { 
-                      if (value == null || value.isEmpty) return 'Campo obrigatório';
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 8,),
-                  AuthTextField(
-                    controller: authController.txtEmail,
-                    hint: "Email",
-                    icon: Icons.email,
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) { 
-                      if (value == null || value.isEmpty) return 'Campo obrigatório';
-                      if (!value.contains('@')) return 'Email inválido';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  AuthTextField(
-                    controller: authController.txtPassword,
-                    hint: "Senha",
-                    icon: Icons.lock,
-                    obscure: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'Campo obrigatório';
-                      if (value.length < 6) return 'Senha muito curta';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  AuthTextField(
-                    controller: authController.txtPasswordConfirm,
-                    hint: "Confirme sua senha",
-                    icon: Icons.lock,
-                    obscure: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'Campo obrigatório';
-                      if (value != authController.txtPassword.text) return 'As senhas não são iguais';
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 8,),
-                  BirthDateField(
-                    controller: authController.birthDateController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Selecione sua data de nascimento';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 18,),
-                  SizedBox(
-                    height: 45,
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                        authController.registerUser(context);
-                        }
-                      },
-                      child: const Text("Registrar", style: TextStyle(fontSize: 18),),
-                    ),
-                  ),
-                  SizedBox(height: 15),
-                ],
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 25),
+              const Text(
+                'Cadastro',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
-            ),
+              const SizedBox(height: 25),
+              const Text(
+                'Faça seu cadastro',
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 65),
+              AuthTextField(
+                controller: authController.txtName,
+                hint: "Digite seu nome",
+                icon: Icons.person,
+                keyboardType: TextInputType.name,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Campo obrigatório';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 8),
+              AuthTextField(
+                controller: authController.txtEmail,
+                hint: "Email",
+                icon: Icons.email,
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Campo obrigatório';
+                  if (!value.contains('@')) return 'Email inválido';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 8),
+              AuthTextField(
+                controller: authController.txtPassword,
+                hint: "Senha",
+                icon: Icons.lock,
+                obscure: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Campo obrigatório';
+                  if (value.length < 6) return 'Senha muito curta';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 8),
+              AuthTextField(
+                controller: authController.txtPasswordConfirm,
+                hint: "Confirme sua senha",
+                icon: Icons.lock,
+                obscure: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Campo obrigatório';
+                  if (value != authController.txtPassword.text) return 'As senhas não são iguais';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 8),
+              BirthDateField(
+                controller: authController.birthDateController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Selecione sua data de nascimento';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 18),
+              SizedBox(
+                height: 45,
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      authController.registerUser(context);
+                    }
+                  },
+                  child: const Text("Registrar", style: TextStyle(fontSize: 18)),
+                ),
+              ),
+              const SizedBox(height: 15),
+            ],
           ),
-        ],
+        ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }
 

@@ -20,6 +20,7 @@ class UpdateAd {
       createdAt: ad.createdAt,
       userName: ad.userName,
       location: ad.location,
+      status: ad.status,
     );
 
     await repository.updateAd(adWithLowercase);

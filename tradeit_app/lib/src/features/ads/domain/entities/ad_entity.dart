@@ -11,6 +11,7 @@ class AdEntity {
   final DateTime createdAt;
   final String userName;
   final String? location;
+  final String status;
 
   AdEntity({
     required this.id,
@@ -25,6 +26,7 @@ class AdEntity {
     required this.createdAt,
     required this.userName,
     this.location,
+    required this.status,
   });
 
   factory AdEntity.fromMap(Map<String, dynamic> map, String id) {
@@ -41,6 +43,7 @@ class AdEntity {
       createdAt: DateTime.parse(map['createdAt']),
       userName: map['userName'] ?? '',
       location: map['location'],
+      status: map['status']?.toString().toLowerCase().trim() ?? 'ativo',
     );
   }
 
@@ -57,6 +60,7 @@ class AdEntity {
       'createdAt': createdAt.toIso8601String(),
       'userName': userName,
       'location': location,
+      'status': status,
     };
   }
 }

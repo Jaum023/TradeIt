@@ -36,14 +36,17 @@ class _ListingPageState extends State<ListingPage> {
   Widget build(BuildContext context) {
     final query = _searchQuery.trim().toLowerCase();
 
+    // Monta consulta inicial da coleção
     Query adsQuery = FirebaseFirestore.instance.collection('ads');
 
+    // Aplica filtro de busca por título (campo titleLowercase)
     if (query.isNotEmpty) {
       adsQuery = adsQuery
           .where('titleLowercase', isGreaterThanOrEqualTo: query)
           .where('titleLowercase', isLessThanOrEqualTo: '$query\uf8ff');
     }
 
+    // Aplica filtro de categoria se selecionada
     if (selectedCategory.isNotEmpty) {
       adsQuery = adsQuery.where('category', isEqualTo: selectedCategory);
     }
@@ -53,38 +56,37 @@ class _ListingPageState extends State<ListingPage> {
     return Scaffold(
       appBar: AppBar(
         elevation: 4.0,
-        title:
-            _isSearching
-                ? TextField(
-                  controller: _searchController,
-                  autofocus: true,
-                  decoration: InputDecoration(
-                    hintText: 'Buscar anúncio...',
-                    border: InputBorder.none,
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.clear, color: Colors.black),
-                      onPressed: () {
-                        _searchController.clear();
-                        setState(() {
-                          _searchQuery = '';
-                          _isSearching = false;
-                        });
-                      },
-                    ),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value;
-                    });
-                  },
-                )
-                : const Text(
-                  'TradeIt',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Buscar anúncio...',
+                  border: InputBorder.none,
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.clear, color: Colors.black),
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() {
+                        _searchQuery = '';
+                        _isSearching = false;
+                      });
+                    },
                   ),
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                },
+              )
+            : const Text(
+                'TradeIt',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
         centerTitle: true,
         actions: [
           if (!_isSearching)
@@ -106,45 +108,36 @@ class _ListingPageState extends State<ListingPage> {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Row(
-              children:
-                  categories.map((category) {
-                    final isSelected = selectedCategory == category['label'];
-                    return Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        4.0,
-                        4.0,
-                        4.0,
-                        4.0,
+              children: categories.map((category) {
+                final isSelected = selectedCategory == category['label'];
+                return Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: ElevatedButton.icon(
+                    icon: Icon(
+                      category['icon'],
+                      color: isSelected ? Colors.white : Colors.black,
+                      size: 20,
+                    ),
+                    label: Text(category['label']),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isSelected
+                          ? const Color.fromARGB(255, 110, 53, 209)
+                          : Colors.white,
+                      foregroundColor: isSelected ? Colors.white : Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      child: ElevatedButton.icon(
-                        icon: Icon(
-                          category['icon'],
-                          color: isSelected ? Colors.white : Colors.black,
-                          size: 20,
-                        ),
-                        label: Text(category['label']),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              isSelected
-                                  ? const Color.fromARGB(255, 110, 53, 209)
-                                  : const Color.fromARGB(255, 255, 255, 255),
-                          foregroundColor:
-                              isSelected ? Colors.white : Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            selectedCategory =
-                                selectedCategory == category['label']
-                                    ? ''
-                                    : category['label'];
-                          });
-                        },
-                      ),
-                    );
-                  }).toList(),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        selectedCategory = selectedCategory == category['label']
+                            ? ''
+                            : category['label'];
+                      });
+                    },
+                  ),
+                );
+              }).toList(),
             ),
           ),
           const SizedBox(height: 10),
@@ -164,29 +157,30 @@ class _ListingPageState extends State<ListingPage> {
                 if (!snapshot.hasData || snapshot.data == null) {
                   return const Center(child: Text("Nenhum dado disponível."));
                 }
+                
+                final filteredDocs = snapshot.data!.docs.where((doc) {
+                  final data = doc.data() as Map<String, dynamic>?;
+                  final ownerId = data?['ownerId'];
+                  final status = data?['status']?.toString().toLowerCase().trim();
 
-                final firebaseData =
-                    snapshot.data!.docs.where((doc) {
-                      final data = doc.data() as Map<String, dynamic>?;
-                      return data?['ownerId'] != currentUser?.id;
-                    }).toList();
+                  return ownerId != currentUser?.id && status != 'finalizado';
+                }).toList();
 
-                if (firebaseData.isEmpty) {
+
+                if (filteredDocs.isEmpty) {
                   return const Center(
-                    child: Text(
-                      "Nenhum anúncio disponível para os filtros aplicados.",
-                    ),
+                    child: Text("Nenhum anúncio disponível para os filtros aplicados."),
                   );
                 }
 
                 return ListView.builder(
-                  itemCount: firebaseData.length,
+                  itemCount: filteredDocs.length,
                   itemBuilder: (context, index) {
-                    var ad = firebaseData[index];
+                    final ad = filteredDocs[index];
                     final data = ad.data() as Map<String, dynamic>?;
-                    final List<String> images = List<String>.from(
-                      data?['imageUrls'] ?? [],
-                    );
+
+                    final List<String> images =
+                        List<String>.from(data?['imageUrls'] ?? []);
 
                     final createdAt = data?['createdAt'];
                     DateTime? date;
@@ -234,24 +228,23 @@ class _ListingPageState extends State<ListingPage> {
                               borderRadius: const BorderRadius.vertical(
                                 top: Radius.circular(12),
                               ),
-                              child:
-                                  images.isNotEmpty
-                                      ? Image.network(
-                                          images.first,
-                                          width: double.infinity,
-                                          height: 200,
-                                          fit: BoxFit.fill,
-                                          filterQuality: FilterQuality.high,
-                                        )
-                                      : Container(
-                                          width: double.infinity,
-                                          height: 200,
-                                          color: Colors.grey[300],
-                                          child: const Icon(
-                                            Icons.image_not_supported,
-                                            size: 60,
-                                          ),
-                                        ),
+                              child: images.isNotEmpty
+                                  ? Image.network(
+                                      images.first,
+                                      width: double.infinity,
+                                      height: 200,
+                                      fit: BoxFit.cover,
+                                      filterQuality: FilterQuality.high,
+                                    )
+                                  : Container(
+                                      width: double.infinity,
+                                      height: 200,
+                                      color: Colors.grey[300],
+                                      child: const Icon(
+                                        Icons.image_not_supported,
+                                        size: 60,
+                                      ),
+                                    ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(12.0),

@@ -41,6 +41,7 @@ class AdController {
       createdAt: DateTime.now(),
       userName: userName ?? '',
       location: location,
+      status: 'ativo',
     );
 
     await createAd(ad);
@@ -57,6 +58,7 @@ class AdController {
     required List<String> imageUrls, 
     String? userName = '',
     String? location,
+    String status = 'ativo', 
   }) async {
     final updatedAd = AdEntity(
       id: id,
@@ -71,6 +73,7 @@ class AdController {
       createdAt: DateTime.now(),
       userName: userName ?? '',
       location: location,
+      status: status,
     );
 
     await updateAd(updatedAd);

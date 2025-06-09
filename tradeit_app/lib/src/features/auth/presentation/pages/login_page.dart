@@ -41,100 +41,111 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          SizedBox(height: 50),
-          SizedBox(
-            height: 200,
-            child: Image.asset(
-              'assets/images/logo.png',
-              fit: BoxFit.contain,
-            ),
-          ),
-          SizedBox(height: 35),
-          Container(
-            margin: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              SizedBox(
+                height: 200,
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
+              const SizedBox(height: 35),
+              AuthTextField(
+                controller: authController.txtEmail,
+                hint: "Email",
+                icon: Icons.email,
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Campo obrigatório';
+                  if (!value.contains('@')) return 'Email inválido';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+              AuthTextField(
+                controller: authController.txtPassword,
+                hint: "Senha",
+                icon: Icons.lock,
+                obscure: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Campo obrigatório';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                height: 45,
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      authController.login(context);
+                    }
+                  },
+                  child: const Text("Login", style: TextStyle(fontSize: 18)),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Column(
                 children: [
-                  AuthTextField(
-                    controller: authController.txtEmail,
-                    hint: "Email",
-                    icon: Icons.email,
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {  // DESATIVANDO PARA FACILITAR OS TESTES
-                      if (value == null || value.isEmpty) return 'Campo obrigatório';
-                      if (!value.contains('@')) return 'Email inválido';
-                      return null;
-                    },
+                  const Text(
+                    'Faça login por',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 10),
-                  AuthTextField(
-                    controller: authController.txtPassword,
-                    hint: "Senha",
-                    icon: Icons.lock,
-                    obscure: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'Campo obrigatório';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    height: 45,
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          authController.login(context);
-                          
-                        }
-                      },
-                      child: const Text("Login", style: TextStyle(fontSize: 18),),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Column(
-                    children: [
-                      Text('Faça login por', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(  onPressed: () => authController.signInWithGoogle(context),
-                           icon: SizedBox(height: 50,child: Image.asset('assets/images/google_logo.png'))),
-                          IconButton(onPressed: null, icon: SizedBox(height: 60,child: Image.asset('assets/images/facebook_logo.png')))
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 40,),
+                  const SizedBox(height: 8),
                   Row(
-                    mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text('Ainda não criou sua conta?', style: TextStyle(color: Colors.blueGrey)),
-                      TextButton(
-                        onPressed: () => Navigator.pushNamed(context, "/register"),
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.all(5),
-                          minimumSize: Size(0, 0),
-
+                      IconButton(
+                        onPressed: () => authController.signInWithGoogle(context),
+                        icon: SizedBox(
+                          height: 50,
+                          child: Image.asset('assets/images/google_logo.png'),
                         ),
-                        child: Text("Registre-se"),
+                      ),
+                      IconButton(
+                        onPressed: null,
+                        icon: SizedBox(
+                          height: 60,
+                          child: Image.asset('assets/images/facebook_logo.png'),
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
-            ),
+              const SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Ainda não criou sua conta?',
+                    style: TextStyle(color: Colors.blueGrey),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pushNamed(context, "/register"),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.all(5),
+                      minimumSize: const Size(0, 0),
+                    ),
+                    child: const Text("Registre-se"),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }

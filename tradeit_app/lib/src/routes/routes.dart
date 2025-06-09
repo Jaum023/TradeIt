@@ -30,6 +30,7 @@ final routes = <String, WidgetBuilder>{
         {};
 
     return ChatPage(
+      chatId: args['chatId'] ?? '',
       proposta: args['proposta'] ?? 'Nova proposta',
       outroUsuarioUid: args['outroUsuarioUid'] ?? '',
     );

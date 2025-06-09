@@ -39,7 +39,14 @@ class InboxPage extends StatelessWidget {
           }
           debugPrint('Dados recebidos: ${snapshot.data!.docs.length}');
 
-          final propostas = snapshot.data!.docs;
+          final propostasRaw = snapshot.data!.docs;
+
+          //aqui ta dando b.o no inbox, nao aparece a 1 mensagem e a proposta
+          final propostas = propostasRaw.where((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            return data['status'] != 'finalizado';
+          }).toList();
+
           for (var proposta in propostas) {
             debugPrint('Documento recebido: ${proposta.data()}');
           }
@@ -94,11 +101,11 @@ class InboxPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder:
-                          (context) => ChatPage(
-                            proposta: propostaData['proposta'] ?? '',
-                            outroUsuarioUid: otherUserUid.toString(),
-                          ),
+                      builder: (context) => ChatPage(
+                        chatId: propostas[index].id,  // aqui, o id do documento do chat
+                        proposta: propostaData['proposta'] ?? '',
+                        outroUsuarioUid: otherUserUid.toString(),
+                      ),
                     ),
                   );
                 },
