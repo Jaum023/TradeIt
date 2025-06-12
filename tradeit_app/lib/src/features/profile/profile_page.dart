@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:get/get.dart';
 import 'package:tradeit_app/shared/widgets/custom_bottom_app_bar.dart';
 import 'package:tradeit_app/src/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:tradeit_app/src/features/auth/domain/usecases/logout.dart';

@@ -20,6 +20,7 @@ class InboxPage extends StatelessWidget {
         backgroundColor: Colors.white, // AppBar branca
         iconTheme: const IconThemeData(color: Colors.black87), // Ícones escuros
         elevation: 1, // Sombra sutil como na ProductDetail
+        
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream:

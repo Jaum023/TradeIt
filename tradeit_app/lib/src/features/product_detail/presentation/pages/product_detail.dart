@@ -7,13 +7,9 @@ import 'package:tradeit_app/src/features/product_detail/presentation/controller/
 import '../../../../../shared/globalUser.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:tradeit_app/src/features/chat/presentation/pages/chat_page.dart';
-import 'package:tradeit_app/src/features/chat/domain/entities/chat_message.dart';
+import 'package:tradeit_app/shared/cloudinary_helper.dart';
 
 class ProductDetail extends StatelessWidget {
-  final TextEditingController _textController = TextEditingController();
-  File? _imagemSelecionada;
 
   ProductDetail({super.key});
 
@@ -22,6 +18,7 @@ class ProductDetail extends StatelessWidget {
     String ownerId,
     String ownerName,
     String title,
+    String adId, // <-- adicione este parâmetro
     controller,
   ) {
     final picker = ImagePicker();
@@ -47,35 +44,52 @@ class ProductDetail extends StatelessWidget {
             Future<void> enviarProposta(
               String ownerId,
               String ownerName,
+              String adId, // <-- adicione aqui
               controller,
             ) async {
               final uidAtual = currentUser?.id;
-              final nomeAtual = currentUser?.name ?? 'Usuário';
-              final outroUid = ownerId; 
-              final outroNome = controller.adData.value['userName'] ?? 'Outro';
+              final outroUid = ownerId;
 
               if (controller0.text.trim().isEmpty) return;
 
               String? imagemUrl;
-              
+              if (imagemSelecionada != null) {
+                imagemUrl = await CloudinaryHelper.uploadImage(imagemSelecionada!);
+              }
 
               final chatId = uidAtual!.compareTo(outroUid) < 0
                   ? '${uidAtual}_$outroUid'
                   : '${outroUid}_$uidAtual';
 
-              await FirebaseFirestore.instance.collection('inbox').add({
+              // Cria/atualiza o documento do chat
+              await FirebaseFirestore.instance.collection('inbox').doc(chatId).set({
                 'chatId': chatId,
-                //'proposta': currentUser!.name,
-                //'proposta': controller.adData.value['title'] ?? 'Título não disponível',
                 'proposta': title,
                 'ultimaMensagem': '${currentUser?.name ?? 'Usuário'}: ${controller0.text.trim()}',
                 'usuarios': [currentUser!.id, ownerId],
                 'nomes': [currentUser!.name, ownerName],
                 'timestamp': Timestamp.now(),
                 'imagemUrl': imagemUrl ?? '',
+                'status': 'ativo',
               });
 
-              Navigator.popAndPushNamed(context, '/home');
+              // Cria a mensagem na subcoleção 'mensagens'
+              await FirebaseFirestore.instance
+                  .collection('inbox')
+                  .doc(chatId)
+                  .collection('mensagens')
+                  .add({
+                'remetente': currentUser?.id,
+                'texto': controller0.text.trim(),
+                'imagemUrl': imagemSelecionada != null ? imagemUrl ?? '' : '',
+                'timestamp': Timestamp.now(),
+              });
+
+              Navigator.popAndPushNamed(context, '/chat', arguments: {
+                'chatId': chatId,
+                'proposta': title,
+                'outroUsuarioUid': ownerId,
+              });
             }
 
             Future<void> converterMensagem(
@@ -135,7 +149,7 @@ class ProductDetail extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () async {
                     final texto = controller0.text.trim();
-                    await enviarProposta(ownerId, ownerName, controller);
+                    await enviarProposta(ownerId, ownerName, adId, controller);
                     await converterMensagem(ownerId, ownerName, texto);
                   },
                   child: const Text('Enviar'),
@@ -372,6 +386,7 @@ class ProductDetail extends StatelessWidget {
                                 ownerId!,
                                 data['userName'] ?? 'Usuário Desconhecido',
                                 data['title'] ?? 'Título não disponível',
+                                adId, 
                                 controller,
                               );
                             }

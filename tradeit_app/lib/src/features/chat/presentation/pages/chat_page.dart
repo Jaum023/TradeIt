@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:tradeit_app/shared/cloudinary_helper.dart';
 
 class ChatPage extends StatefulWidget {
   final String chatId; // ID do chat na coleção 'inbox'
@@ -17,6 +20,7 @@ class ChatPage extends StatefulWidget {
 
   @override
   State<ChatPage> createState() => _ChatPageState();
+  
 }
 
 class _ChatPageState extends State<ChatPage> {
@@ -73,6 +77,54 @@ class _ChatPageState extends State<ChatPage> {
     });
 
     _controllerMensagem.clear();
+  }
+
+
+  Future<void> _enviarImagens() async {
+    final picker = ImagePicker();
+    final pickedList = await picker.pickMultiImage(imageQuality: 80);
+    if (pickedList.isEmpty) return;
+
+    final now = DateTime.now();
+
+    for (final picked in pickedList) {
+      String? imageUrl;
+      try {
+        imageUrl = await CloudinaryHelper.uploadImage(File(picked.path));
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao enviar imagem: $e')),
+        );
+        continue;
+      }
+
+      if (imageUrl == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Falha ao enviar imagem.')),
+        );
+        continue;
+      }
+
+      await FirebaseFirestore.instance
+          .collection('inbox')
+          .doc(widget.chatId)
+          .collection('mensagens')
+          .add({
+        'remetente': currentUser?.uid,
+        'texto': '', // texto vazio
+        'imagemUrl': imageUrl,
+        'timestamp': now,
+      });
+    }
+
+    // Atualiza dados principais do chat
+    await FirebaseFirestore.instance
+        .collection('inbox')
+        .doc(widget.chatId)
+        .update({
+      'ultimaMensagem': '[imagem]',
+      'timestamp': now,
+    });
   }
 
   // Função para exibir modal e finalizar chat
@@ -153,17 +205,16 @@ class _ChatPageState extends State<ChatPage> {
                     final msgData =
                         mensagens[index].data()! as Map<String, dynamic>;
                     final texto = msgData['texto'] ?? '';
+                    final imagemUrl = msgData['imagemUrl'] as String?;
                     final remetente = msgData['remetente'] ?? '';
                     final timestamp = msgData['timestamp'] as Timestamp?;
 
                     final bool isMe = remetente == currentUser?.uid;
 
                     return Align(
-                      alignment:
-                          isMe ? Alignment.centerRight : Alignment.centerLeft,
+                      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 4.0, horizontal: 8.0),
+                        margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: isMe
@@ -174,22 +225,24 @@ class _ChatPageState extends State<ChatPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              texto,
-                              style: TextStyle(
-                                color: isMe ? Colors.white : Colors.black87,
-                                fontSize: 16,
+                            if (imagemUrl != null && imagemUrl.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Image.network(imagemUrl, height: 150),
                               ),
-                            ),
+                            if (texto.isNotEmpty)
+                              Text(
+                                texto,
+                                style: TextStyle(
+                                  color: isMe ? Colors.white : Colors.black87,
+                                  fontSize: 16,
+                                ),
+                              ),
                             if (timestamp != null)
                               Text(
-                                DateFormat('HH:mm')
-                                    .format(timestamp.toDate()),
+                                DateFormat('HH:mm').format(timestamp.toDate()),
                                 style: TextStyle(
-                                  color: (isMe
-                                          ? Colors.white70
-                                          : Colors.black54)
-                                      .withOpacity(0.7),
+                                  color: (isMe ? Colors.white70 : Colors.black54).withOpacity(0.7),
                                   fontSize: 10,
                                 ),
                               ),
@@ -216,19 +269,23 @@ class _ChatPageState extends State<ChatPage> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                // Botão de imagem
+                IconButton(
+                  icon: const Icon(Icons.image),
+                  onPressed: _chatFinalizado ? null : _enviarImagens,
+                ),
+                // Campo de texto
                 Expanded(
                   child: TextField(
-                      controller: _controllerMensagem,
-                      enabled: !_chatFinalizado,
-                      readOnly: _chatFinalizado,
-                      decoration: InputDecoration(
-                        // _chatFinalizado ? 'Chat finalizado' : 
-                        hintText: 'Digite sua mensagem...',
-                        border: const OutlineInputBorder(),
-                      ),
-                      onSubmitted: (_) => _enviarMensagem(),
+                    controller: _controllerMensagem,
+                    enabled: !_chatFinalizado,
+                    readOnly: _chatFinalizado,
+                    decoration: InputDecoration(
+                      hintText: 'Digite sua mensagem...',
+                      border: const OutlineInputBorder(),
                     ),
-
+                    onSubmitted: (_) => _enviarMensagem(),
+                  ),
                 ),
                 const SizedBox(width: 8),
                 IconButton(

@@ -8,6 +8,7 @@ class ChatMessage {
     required this.text,
     required this.sender,
     required this.time,
+    
     required this.isMe,
   });
 }
